@@ -1,0 +1,8 @@
+Building DAG of jobs...
+InputFunctionException in line 13 of /mnt/volume1/pipeline/Snakefile:
+Error:
+  KeyError: 'WEB1891'
+Wildcards:
+  sample=WEB1891
+Traceback:
+  File "/mnt/volume1/pipeline/Snakefile", line 15, in <lambda>

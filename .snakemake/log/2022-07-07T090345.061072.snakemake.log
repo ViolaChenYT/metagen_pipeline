@@ -1,0 +1,31 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job                 count    min threads    max threads
+----------------  -------  -------------  -------------
+sample_alignment        1              1              1
+total                   1              1              1
+
+Select jobs to execute...
+
+[Thu Jul  7 09:03:45 2022]
+rule sample_alignment:
+    input: /mnt/volume1/cpe/MBH038/merge_MBH038_R1.fastq.gz, /mnt/volume1/cpe/MBH038/merge_MBH038_R2.fastq.gz, /mnt/volume1/ref/E_coli_ref.fna
+    output: /mnt/volume1/cpe/MBH038/ec.bam
+    jobid: 0
+    wildcards: sample=MBH038
+    resources: tmpdir=/tmp
+
+[Thu Jul  7 09:03:45 2022]
+Error in rule sample_alignment:
+    jobid: 0
+    output: /mnt/volume1/cpe/MBH038/ec.bam
+    shell:
+        bowtie2 -p 6 -x /mnt/volume1/ref/E_coli_ref.fna -1 /mnt/volume1/cpe/MBH038/merge_MBH038_R1.fastq.gz -2 /mnt/volume1/cpe/MBH038/merge_MBH038_R2.fastq.gz | samtools view -@ 16 -b -u | samtools sort -o /mnt/volume1/cpe/MBH038/ec.bamsamtools index /mnt/volume1/cpe/MBH038/ec.bam
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /mnt/volume1/pipeline/.snakemake/log/2022-07-07T090345.061072.snakemake.log

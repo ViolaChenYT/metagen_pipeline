@@ -1,0 +1,4 @@
+Building DAG of jobs...
+MissingInputException in line 1 of /mnt/volume1/pipeline/Snakefile:
+Missing input files for rule sample_alignment:
+mnt/volume1/ref/E_coli_ref.fna

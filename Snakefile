@@ -27,7 +27,8 @@ rule sample_alignment:
     r2 = "/mnt/volume1/cpe/{sample}/merge_{sample}_R2.fastq.gz",
     ref = "/mnt/volume1/ref/E_coli_ref.fna"
   output:
-    bam_file = "/mnt/volume1/cpe/{sample}/ec.bam"
+    bam_file = "/mnt/volume1/cpe/{sample}/ec.bam",
+    bai = "/mnt/volume1/cpe/{sample}/ec.bam.bai"
   shell:
     "bowtie2 -p 6 -x {input.ref} -1 {input.r1} -2 {input.r2} | "
     "samtools view -@ 16 -b -u - | samtools sort -o {output.bam_file} && "
@@ -43,7 +44,7 @@ rule filter:
 
 rule lofreq:
   input:
-    ref = "/mnt/volume1/ref/E_coli_ref.fna"
+    ref = "/mnt/volume1/ref/E_coli_ref.fna",
     filt_bam = "/mnt/volume1/cpe/{sample}/ec_filt.bam"
   output:
     "/mnt/volume1/result/{sample}/filt.bam.vcf"
@@ -52,10 +53,10 @@ rule lofreq:
 
 rule pileup:
   input:
-    ref = "/mnt/volume1/ref/E_coli_ref.fna"
+    ref = "/mnt/volume1/ref/E_coli_ref.fna",
     bam = "/mnt/volume1/result/{sample}/ec.bam"
   output:
-    pileup = temp("/mnt/volume1/result/{sample}/ec.bam.pileup")
+    pileup = temp("/mnt/volume1/result/{sample}/ec.bam.pileup"),
     gz = "/mnt/volume1/result/{sample}/ec.bam.pileup.gz"
   shell:
     "samtools mpileup -E -f {input.ref} {input.bam} > {output.pileup} &&"
@@ -65,7 +66,7 @@ rule coverage:
   input:
     "/mnt/volume1/cpe/{sample}/ec_filt.bam"
   output:
-    txt = "/mnt/volume1/result/{sample}/coverage.txt"
+    txt = "/mnt/volume1/result/{sample}/coverage.txt",
     summary = "/mnt/volume1/result/{sample}/coverage.summary"
   shell:
     "genomeCoverageBed -d -ibam {input} > {output.txt} && "

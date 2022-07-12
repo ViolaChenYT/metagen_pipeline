@@ -1,0 +1,23 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job                 count    min threads    max threads
+----------------  -------  -------------  -------------
+annotate_gene           1              1              1
+filter                  1              1              1
+lofreq                  1              1              1
+sample_alignment        1              1              1
+total                   4              1              1
+
+Select jobs to execute...
+
+[Tue Jul 12 01:39:00 2022]
+rule sample_alignment:
+    input: /mnt/volume1/cpe/MBH038/merge_MBH038_R1.fastq.gz, /mnt/volume1/cpe/MBH038/merge_MBH038_R2.fastq.gz, /mnt/volume1/ref/E_coli_ref.fna
+    output: /mnt/volume1/cpe/MBH038/ec.bam, /mnt/volume1/cpe/MBH038/ec.bam.bai
+    jobid: 3
+    wildcards: sample=MBH038
+    resources: tmpdir=/tmp
+

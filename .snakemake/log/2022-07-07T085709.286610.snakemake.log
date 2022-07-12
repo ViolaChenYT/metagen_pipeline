@@ -1,4 +1,0 @@
-Building DAG of jobs...
-WildcardError in line 1 of /mnt/volume1/pipeline/Snakefile:
-Wildcards in input files cannot be determined from output files:
-'wc'

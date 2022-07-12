@@ -1,11 +1,3 @@
-
-config = {
-  'WEB1352': {
-    'r1': '/mnt/volume1/isolate/WEB1352/WEB1352-GCACGCGT_S7_L004_R1_001_HS006-PE-R00207.fastq.gz',
-    'r2': '/mnt/volume1/isolate/WEB1352/WEB1352-GCACGCGT_S7_L004_R2_001_HS006-PE-R00207.fastq.gz'
-  }
-}
-
 rule all:
   input:
     expand("/mnt/volume1/result/{sample}/ec.bam", sample=config)
@@ -17,9 +9,10 @@ rule isolate_alignment:
     ref = "mnt/volume1/ref/E_coli_ref.fna"
   output:
     bam_file = "/mnt/volume1/isolate/{sample}/ec.bam"
+  conda:
+    'workflow/envs/mapping.yaml'
   shell:
     "bowtie2 -p 6 -x {input.ref} -1 {input.r1} -2 {input.r2} | samtools view -@ 16 -b -u - | samtools sort -o {output.bam_file}"
-    "samtools index {output.bam_file}"
 
 rule sample_alignment:
   input:
@@ -28,19 +21,25 @@ rule sample_alignment:
     ref = "/mnt/volume1/ref/E_coli_ref.fna"
   output:
     bam_file = "/mnt/volume1/cpe/{sample}/ec.bam",
-    bai = "/mnt/volume1/cpe/{sample}/ec.bam.bai"
   shell:
     "bowtie2 -p 6 -x {input.ref} -1 {input.r1} -2 {input.r2} | "
-    "samtools view -@ 16 -b -u - | samtools sort -o {output.bam_file} && "
-    "samtools index {output.bam_file}"
+    "samtools view -@ 16 -b -u - | samtools sort -o {output.bam_file}"
+
+rule samtools_index:
+  input:
+    '/mnt/volume1/{group}/{sample}/ec.bam'
+  output:
+    '/mnt/volume1/{group}/{sample}/ec.bam.bai'
+  shell:
+    'samtools index {input}'
 
 rule filter:
   input:
     "/mnt/volume1/cpe/{sample}/ec.bam"
   output:
     "/mnt/volume1/cpe/{sample}/ec_filt.bam"
-  shell:
-    "python /mnt/volume1/scripts/bamfilter.py {input} {output}"
+  script:
+    'workflow/scripts/bamfilter.py'
 
 rule lofreq:
   input:
@@ -56,11 +55,9 @@ rule pileup:
     ref = "/mnt/volume1/ref/E_coli_ref.fna",
     bam = "/mnt/volume1/result/{sample}/ec.bam"
   output:
-    pileup = temp("/mnt/volume1/result/{sample}/ec.bam.pileup"),
     gz = "/mnt/volume1/result/{sample}/ec.bam.pileup.gz"
   shell:
-    "samtools mpileup -E -f {input.ref} {input.bam} > {output.pileup} &&"
-    "gzip {output.pileup} && rm {output.pileup}"
+    "(samtools mpileup -E -f {input.ref} {input.bam} > {output.pileup}) && gzip {output.pileup}"
 
 rule coverage:
   input:
@@ -79,6 +76,6 @@ rule annotate_gene:
   output:
      "/mnt/volume1/result/{sample}/ann.vcf"
   shell:
-    "/mnt/volume1/scripts/annotate.sh EC {input} {output}"
+    "workflow/scripts/annotate.sh EC {input} {output}"
 
 

@@ -1,0 +1,7 @@
+{
+    "WEB1352": {
+      "r1": "example/reads/headread1.fastq.gz",
+      "r2": "example/reads/headread2.fastq.gz",
+      "ref": "example/ecoli_ref.fasta"
+  }
+}

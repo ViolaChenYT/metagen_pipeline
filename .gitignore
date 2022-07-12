@@ -1,0 +1,9 @@
+*.log
+*.bt2
+*.fna.fai
+**_filt.bam
+*.bam
+*.bam.bai
+data/output/*
+*/coverage.txt
+.snakemake/*

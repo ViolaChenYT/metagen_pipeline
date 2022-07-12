@@ -1,6 +1,9 @@
+SNPEFF = 'dbdhxdxkl/smpeff'
+
 rule all:
   input:
-    expand("/mnt/volume1/result/{sample}/ec.bam", sample=config)
+    expand("/mnt/volume1/result/{sample}/ec.bam", sample=config),
+    expand("data/output/ann.vcf", sample=config)
 
 rule bowtie_build:
   input:
@@ -140,7 +143,7 @@ rule coverage_avg_test:
   output:
     "{homedir}/output/coverage.summary"
   shell:
-    "samtools depth -aa {input} | awk '{sum+=$3} END {print sum/NR}' > {output}"
+    "samtools depth -aa {input} | awk '{{sum+=$3}} END {{print sum/NR}}' > {output}"
 
 rule annotate_gene:
   input:
@@ -157,5 +160,4 @@ rule annotate_gene_test:
      "{homedir}/{dir}/ann.vcf"
   shell:
     "workflow/scripts/annotate.sh EC {input} {output}"
-
-
+  

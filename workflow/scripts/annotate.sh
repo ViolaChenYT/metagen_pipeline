@@ -18,4 +18,3 @@ else
 	echo "species not recognized, currently only recognize KP and EC"
 	echo "exiting..."
 fi
-

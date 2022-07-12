@@ -47,6 +47,7 @@ rule alignment:
     "bowtie2 -p 6 -x {input.ref} -1 {input.r1} -2 {input.r2} | "
     "samtools view -@ 16 -b -u - | samtools sort -o {output.bam_file}"
 
+
 rule samtools_index:
   input:
     '{sample}/ec.bam'

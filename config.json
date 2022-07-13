@@ -1,7 +1,8 @@
 {
     "WEB1352": {
-      "r1": "example/reads/headread1.fastq.gz",
-      "r2": "example/reads/headread2.fastq.gz",
-      "ref": "example/ecoli_ref.fasta"
+      "r1": "data/merge_data_R1.fastq.gz",
+      "r2": "data/merge_data_R2.fastq.gz",
+      "ref": "data/E_coli_ref.fna",
+      "snpeff_species": "Escherichia_coli_iai39"
   }
 }

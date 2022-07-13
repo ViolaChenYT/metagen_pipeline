@@ -4,3 +4,7 @@ channels:
 dependencies:
   - bowtie2
   - samtools
+  - bedtools
+  - lofreq
+  - snpeff
+  - pysam

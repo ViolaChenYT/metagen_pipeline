@@ -1,163 +1,118 @@
-SNPEFF = 'dbdhxdxkl/smpeff'
+from pathlib import Path
 
 rule all:
-  input:
-    expand("/mnt/volume1/result/{sample}/ec.bam", sample=config),
-    expand("data/output/ann.vcf", sample=config)
+    input:
+        expand("mapping/{sample}.filt.{mapper}.annotated.vcf", sample=config, mapper=('lofreq',))
+
+rule link_ref:
+    input:
+        lambda wc: Path(config[wc.sample]['ref']).resolve()
+    output:
+        'refs/{sample}.fasta'
+    shell:
+        'ln -s {input} {output}'
 
 rule bowtie_build:
-  input:
-    "data/{species}_ref.fna"
-  output:
-    "data/{species}_ref.fna.1.bt2",
-    "data/{species}_ref.fna.2.bt2",
-    "data/{species}_ref.fna.3.bt2",
-    "data/{species}_ref.fna.4.bt2",
-    "data/{species}_ref.fna.rev.1.bt2",
-    "data/{species}_ref.fna.rev.2.bt2"
-  shell:
-    "bowtie2-build {input} {input}"
-
-rule isolate_alignment:
-  input:
-    r1 = lambda wc: config[wc.sample]['r1'] ,
-    r2 = lambda wc: config[wc.sample]['r2'] ,
-    ref = "data/E_coli_ref.fna"
-  output:
-    bam_file = "{homedir}/isolate/{sample}/ec.bam"
-  conda:
-    'workflow/envs/mapping.yaml'
-  shell:
-    "bowtie2 -p 6 -x {input.ref} -1 {input.r1} -2 {input.r2} | "
-    "samtools view -@ 16 -b -u - | "
-    "samtools sort -o {output.bam_file}"
-
+    input:
+        "refs/{sample}.fasta"
+    output:
+        "refs/{sample}.fasta.1.bt2",
+        "refs/{sample}.fasta.2.bt2",
+        "refs/{sample}.fasta.3.bt2",
+        "refs/{sample}.fasta.4.bt2",
+        "refs/{sample}.fasta.rev.1.bt2",
+        "refs/{sample}.fasta.rev.2.bt2"
+    conda:
+        'workflow/envs/mapping.yaml'
+    shell:
+        "bowtie2-build {input} {input}"
 
 rule alignment:
-  input:
-    r1 = "{sample}/merge_{sample}_R1.fastq.gz",
-    r2 = "{sample}/merge_{sample}_R2.fastq.gz",
-    ref = "data/E_coli_ref.fna",
-    bt1 = "data/E_coli_ref.fna.1.bt2",
-    bt2 = "data/E_coli_ref.fna.2.bt2",
-    bt3 = "data/E_coli_ref.fna.3.bt2",
-    bt4 = "data/E_coli_ref.fna.4.bt2",
-    rev1 = "data/E_coli_ref.fna.rev.1.bt2",
-    rev2 = "data/E_coli_ref.fna.rev.2.bt2"
-  output:
-    bam_file = "{sample}/ec.bam",
-  shell:
-    "bowtie2 -p 6 -x {input.ref} -1 {input.r1} -2 {input.r2} | "
-    "samtools view -@ 16 -b -u - | samtools sort -o {output.bam_file}"
-
+    input:
+        r1 = lambda wc: config[wc.sample]['r1'],
+        r2 = lambda wc: config[wc.sample]['r2'],
+        ref = rules.link_ref.output,
+        idx = rules.bowtie_build.output
+    output:
+        'mapping/{sample}.bam'
+    conda:
+        'workflow/envs/mapping.yaml'
+    shell:
+        "bowtie2 -p 6 -x {input.ref} -1 {input.r1} -2 {input.r2} | "
+        "samtools view -@ 16 -b -u - | samtools sort -o {output}"
 
 rule samtools_index:
-  input:
-    '{sample}/ec.bam'
-  output:
-    '{sample}/ec.bam.bai'
-  shell:
-    'samtools index {input}'
+    input:
+        rules.alignment.output
+    output:
+        'mapping/{sample}.bam.bai'
+    conda:
+        'workflow/envs/mapping.yaml'
+    shell:
+        'samtools index {input}'
 
-rule filter:
-  input:
-    "{sample}/ec.bam",
-    "{sample}/ec.bam.bai"
-  output:
-    "{sample}/ec_filt.bam"
-  script:
-    'workflow/scripts/bamfilter.py'
+rule bamfilter:
+    input:
+        rules.alignment.output,
+        rules.samtools_index.output
+    output:
+        "mapping/{sample}.filt.bam"
+    conda:
+        'workflow/envs/mapping.yaml'
+    script:
+        'workflow/scripts/bamfilter.py'
 
 rule lofreq:
-  input:
-    ref = "data/E_coli_ref.fna",
-    filt_bam = "{homedir}/cpe/{sample}/ec_filt.bam"
-  output:
-    "{homedir}/result/{sample}/filt.bam.vcf"
-  shell:
-    "lofreq call -f {input.ref} -o {output} --verbose {input.filt_bam}"
-
-rule lofreq_test:
-  input:
-    ref = "data/E_coli_ref.fna",
-    filt_bam = "{dir}/ec_filt.bam"
-  output:
-    "{dir}/output/filt.bam.vcf"
-  shell:
-    "lofreq call -f {input.ref} -o {output} --verbose {input.filt_bam}"
-
-rule lofreq_isolate:
-  input:
-    ref = "data/E_coli_ref.fna",
-    filt_bam = "{homedir}/isolate/{sample}/ec_filt.bam"
-  output:
-    "{homedir}/result/{sample}/filt.bam.vcf"
-  shell:
-    "lofreq call -f {input.ref} -o {output} --verbose {input.filt_bam}"
+    input:
+        ref = rules.link_ref.output,
+        filt_bam = rules.bamfilter.output
+    output:
+        "mapping/{sample}.filt.lofreq.vcf"
+    conda:
+        'workflow/envs/mapping.yaml'
+    shell:
+        "lofreq call -f {input.ref} -o {output} --verbose {input.filt_bam}"
 
 rule pileup:
-  input:
-    ref = "data/E_coli_ref.fna",
-    bam = "{homedir}/result/{sample}/ec.bam"
-  output:
-    gz = "{homedir}/result/{sample}/ec.bam.pileup.gz"
-  shell:
-    "samtools mpileup -E -f {input.ref} {input.bam} | gzip > {output.gz}"
-
-rule pileup_test:
-  input:
-    ref = "data/E_coli_ref.fna",
-    bam = "{homedir}/ec.bam"
-  output:
-    gz = "{homedir}/output/ec.bam.pileup.gz"
-  shell:
-    "samtools mpileup -E -f {input.ref} {input.bam} | gzip > {output.gz}"
+    input:
+        ref = rules.link_ref.output,
+        bam = rules.alignment.output
+    output:
+        gz = "mapping/{sample}.pileup.gz"
+    conda:
+        'workflow/envs/mapping.yaml'
+    shell:
+        "samtools mpileup -E -f {input.ref} {input.bam} | gzip > {output.gz}"
 
 rule coverage_txt:
-  input:
-    "{homedir}/cpe/{sample}/ec_filt.bam"
-  output:
-    "{homedir}/result/{sample}/coverage.txt"
-  shell:
-    "genomeCoverageBed -d -ibam {input} > {output}"
+    input:
+        rules.bamfilter.output
+    output:
+        "mapping/{sample}.filt.coverage.txt"
+    conda:
+        'workflow/envs/mapping.yaml'
+    shell:
+        "genomeCoverageBed -d -ibam {input} > {output}"
 
 rule coverage_avg:
-  input:
-    "{homedir}/cpe/{sample}/ec_filt.bam"
-  output:
-    "{homedir}/result/{sample}/coverage.summary"
-  shell:
-    "samtools depth -aa {input} | awk '{sum+=$3} END {print sum/NR}' > {output}"
-
-rule coverage_txt_test:
-  input:
-    "{homedir}/ec_filt.bam"
-  output:
-    "{homedir}/output/coverage.txt"
-  shell:
-    "genomeCoverageBed -d -ibam {input} > {output}"
-
-rule coverage_avg_test:
-  input:
-    "{homedir}/ec_filt.bam"
-  output:
-    "{homedir}/output/coverage.summary"
-  shell:
-    "samtools depth -aa {input} | awk '{{sum+=$3}} END {{print sum/NR}}' > {output}"
+    input:
+        bam = rules.alignment.output,
+        bai = rules.samtools_index.output
+    output:
+        "mapping/{sample}.filt.coverage.summary.txt"
+    conda:
+        'workflow/envs/mapping.yaml'
+    shell:
+        "samtools depth -aa {input.bam} | awk '{{sum+=$3}} END {{print sum/NR}}' > {output}"
 
 rule annotate_gene:
-  input:
-    "{homedir}/{dir}/{sample}/filt.bam.vcf"
-  output:
-     "{homedir}/{dir}/{sample}/ann.vcf"
-  shell:
-    "workflow/scripts/annotate.sh EC {input} {output}"
-
-rule annotate_gene_test:
-  input:
-    "{homedir}/{dir}/filt.bam.vcf"
-  output:
-     "{homedir}/{dir}/ann.vcf"
-  shell:
-    "workflow/scripts/annotate.sh EC {input} {output}"
-  
+    input:
+        "mapping/{sample}.filt.{mapper}.vcf"
+    output:
+        "mapping/{sample}.filt.{mapper}.annotated.vcf"
+    params:
+        snpeff_species = lambda wc: config[wc.sample]['snpeff_species']
+    conda:
+        'workflow/envs/mapping.yaml'
+    shell:
+        "java -Xmx8g -jar workflow/soft/snpEff/snpEff.jar {params.snpeff_species} {input} > {output}"

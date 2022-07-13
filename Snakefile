@@ -1,27 +1,31 @@
 from pathlib import Path
 
 rule all:
-    input:
-        expand("mapping/{sample}.filt.{mapper}.annotated.vcf", sample=config, mapper=('lofreq',))
+  input:
+    expand("output/{sample}/{species}.filt.{mapper}.annotated.vcf", sample=config, species=("Escherichia_coli_iai39",), mapper=('lofreq',))
 
-rule link_ref:
-    input:
-        lambda wc: Path(config[wc.sample]['ref']).resolve()
-    output:
-        'refs/{sample}.fasta'
-    shell:
-        'ln -s {input} {output}'
+# rule link_ref:
+#   input:
+#     lambda wc: Path(config[wc.sample]['ref']).resolve()
+#   output:
+#     'refs/{sample}_Escherichia_coli_iai39.fasta'
+#   shell:
+#     'ln -s {input} {output}'
+# 
+#   doesn't make much sense if every single sample has its own reference  
+
+REFERENCE = "refs/Escherichia_coli_iai39.fasta"
 
 rule bowtie_build:
     input:
-        "refs/{sample}.fasta"
+        "refs/{species}.fasta"
     output:
-        "refs/{sample}.fasta.1.bt2",
-        "refs/{sample}.fasta.2.bt2",
-        "refs/{sample}.fasta.3.bt2",
-        "refs/{sample}.fasta.4.bt2",
-        "refs/{sample}.fasta.rev.1.bt2",
-        "refs/{sample}.fasta.rev.2.bt2"
+        "refs/{species}.fasta.1.bt2",
+        "refs/{species}.fasta.2.bt2",
+        "refs/{species}.fasta.3.bt2",
+        "refs/{species}.fasta.4.bt2",
+        "refs/{species}.fasta.rev.1.bt2",
+        "refs/{species}.fasta.rev.2.bt2"
     conda:
         'workflow/envs/mapping.yaml'
     shell:
@@ -31,10 +35,24 @@ rule alignment:
     input:
         r1 = lambda wc: config[wc.sample]['r1'],
         r2 = lambda wc: config[wc.sample]['r2'],
-        ref = rules.link_ref.output,
+        ref = REFERENCE,
         idx = rules.bowtie_build.output
     output:
-        'mapping/{sample}.bam'
+        'output/{sample}/{species}.bam'
+    conda:
+        'workflow/envs/mapping.yaml'
+    shell:
+        "bowtie2 -p 6 -x {input.ref} -1 {input.r1} -2 {input.r2} | "
+        "samtools view -@ 16 -b -u - | samtools sort -o {output}"
+
+rule alignment_mine:
+    input:
+        r1 = "{homedir}/{sample}/merge_{sample}_R1.fastq.gz" ,
+        r2 = "{homedir}/{sample}/merge_{sample}_R2.fastq.gz" ,
+        ref = REFERENCE,
+        idx = rules.bowtie_build.output
+    output:
+        "{homedir}/{sample}/{species}.bam"
     conda:
         'workflow/envs/mapping.yaml'
     shell:
@@ -45,7 +63,7 @@ rule samtools_index:
     input:
         rules.alignment.output
     output:
-        'mapping/{sample}.bam.bai'
+        'output/{sample}/{species}.bam.bai'
     conda:
         'workflow/envs/mapping.yaml'
     shell:
@@ -56,7 +74,7 @@ rule bamfilter:
         rules.alignment.output,
         rules.samtools_index.output
     output:
-        "mapping/{sample}.filt.bam"
+        "output/{sample}/{species}.filt.bam"
     conda:
         'workflow/envs/mapping.yaml'
     script:
@@ -64,10 +82,10 @@ rule bamfilter:
 
 rule lofreq:
     input:
-        ref = rules.link_ref.output,
+        ref = REFERENCE,
         filt_bam = rules.bamfilter.output
     output:
-        "mapping/{sample}.filt.lofreq.vcf"
+        "output/{sample}/{species}.filt.lofreq.vcf"
     conda:
         'workflow/envs/mapping.yaml'
     shell:
@@ -75,10 +93,10 @@ rule lofreq:
 
 rule pileup:
     input:
-        ref = rules.link_ref.output,
+        ref = REFERENCE,
         bam = rules.alignment.output
     output:
-        gz = "mapping/{sample}.pileup.gz"
+        gz = "output/{sample}/{sample}.pileup.gz"
     conda:
         'workflow/envs/mapping.yaml'
     shell:
@@ -88,7 +106,7 @@ rule coverage_txt:
     input:
         rules.bamfilter.output
     output:
-        "mapping/{sample}.filt.coverage.txt"
+        "output/{sample}/{species}.filt.coverage.txt"
     conda:
         'workflow/envs/mapping.yaml'
     shell:
@@ -99,7 +117,7 @@ rule coverage_avg:
         bam = rules.alignment.output,
         bai = rules.samtools_index.output
     output:
-        "mapping/{sample}.filt.coverage.summary.txt"
+        "output/{sample}/{species}.filt.coverage.summary.txt"
     conda:
         'workflow/envs/mapping.yaml'
     shell:
@@ -107,12 +125,12 @@ rule coverage_avg:
 
 rule annotate_gene:
     input:
-        "mapping/{sample}.filt.{mapper}.vcf"
+        "output/{sample}/{species}.filt.{mapper}.vcf"
     output:
-        "mapping/{sample}.filt.{mapper}.annotated.vcf"
+        "output/{sample}/{species}.filt.{mapper}.annotated.vcf"
     params:
         snpeff_species = lambda wc: config[wc.sample]['snpeff_species']
     conda:
         'workflow/envs/mapping.yaml'
     shell:
-        "java -Xmx8g -jar workflow/soft/snpEff/snpEff.jar {params.snpeff_species} {input} > {output}"
+        "(snpeff {params.snpeff_species} {input} > {output}) && mv snpEff* output/{wildcards.sample}/"

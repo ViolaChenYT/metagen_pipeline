@@ -1,8 +1,15 @@
 {
-    "WEB1352": {
+    "test_data": {
       "r1": "data/merge_data_R1.fastq.gz",
       "r2": "data/merge_data_R2.fastq.gz",
       "ref": "data/E_coli_ref.fna",
       "snpeff_species": "Escherichia_coli_iai39"
-  }
+    }
+    ,
+    "MBH082": {
+      "r1": "../cpe/MBH082/merge_MBH082_R1.fastq.gz",
+      "r2": "../cpe/MBH082/merge_MBH082_R2.fastq.gz",
+      "ref": "data/E_coli_ref.fna",
+      "snpeff_species": "Escherichia_coli_iai39"
+    }
 }

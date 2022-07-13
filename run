@@ -1,0 +1,4 @@
+#!/bin/bash
+
+snakemake --configfile config.json --use-conda --cores 2
+rm .snakemake/log/*

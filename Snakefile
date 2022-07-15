@@ -2,7 +2,12 @@ from pathlib import Path
 
 rule all:
   input:
-    expand("output/{sample}/{species}.filt.{mapper}.annotated.vcf", sample=config, species=("Escherichia_coli_iai39",), mapper=('lofreq',))
+    expand("output/{sample}/{species}.{filt}.{mapper}.annotated.vcf", \
+        sample=config, species=("Escherichia_coli_iai39",), mapper=('lofreq',), \
+        filt=('filt',)),
+    expand("output/{sample}/{species}.{filt}.coverage.txt.gz", \
+        sample=config, species=("Escherichia_coli_iai39",), mapper=('lofreq',), \
+        filt=('filt',))
 
 # rule link_ref:
 #   input:
@@ -80,12 +85,23 @@ rule bamfilter:
     script:
         'workflow/scripts/bamfilter.py'
 
+# rule lose_filter:
+#     input:
+#         rules.alignment.output,
+#         rules.samtools_index.output
+#     output:
+#         "output/{sample}/{species}.{filt}.bam"
+#     conda:
+#         'workflow/envs/mapping.yaml'
+#     script:
+#         'workflow/scripts/bamfilter.py -l'
+
 rule lofreq:
     input:
         ref = REFERENCE,
         filt_bam = rules.bamfilter.output
     output:
-        "output/{sample}/{species}.filt.lofreq.vcf"
+        "output/{sample}/{species}.{filt}.lofreq.vcf"
     conda:
         'workflow/envs/mapping.yaml'
     shell:
@@ -106,18 +122,18 @@ rule coverage_txt:
     input:
         rules.bamfilter.output
     output:
-        "output/{sample}/{species}.filt.coverage.txt"
+        "output/{sample}/{species}.{filt}.coverage.txt.gz"
     conda:
         'workflow/envs/mapping.yaml'
     shell:
-        "genomeCoverageBed -d -ibam {input} > {output}"
+        "genomeCoverageBed -d -ibam {input} | gzip > {output}"
 
 rule coverage_avg:
     input:
         bam = rules.alignment.output,
         bai = rules.samtools_index.output
     output:
-        "output/{sample}/{species}.filt.coverage.summary.txt"
+        "output/{sample}/{species}.{filt}.coverage.summary.txt"
     conda:
         'workflow/envs/mapping.yaml'
     shell:
@@ -125,9 +141,9 @@ rule coverage_avg:
 
 rule annotate_gene:
     input:
-        "output/{sample}/{species}.filt.{mapper}.vcf"
+        "output/{sample}/{species}.{filt}.{mapper}.vcf"
     output:
-        "output/{sample}/{species}.filt.{mapper}.annotated.vcf"
+        "output/{sample}/{species}.{filt}.{mapper}.annotated.vcf"
     params:
         snpeff_species = lambda wc: config[wc.sample]['snpeff_species']
     conda:

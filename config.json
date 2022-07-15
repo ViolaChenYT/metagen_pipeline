@@ -12,4 +12,11 @@
       "ref": "data/E_coli_ref.fna",
       "snpeff_species": "Escherichia_coli_iai39"
     }
+    ,
+    "WEB1012": {
+      "r1": "../isolate/WEB1012/merge_WEB1012_R1.fastq.gz",
+      "r2": "../isolate/WEB1012/merge_WEB1012_R2.fastq.gz",
+      "ref": "data/E_coli_ref.fna",
+      "snpeff_species": "Escherichia_coli_iai39"
+    }
 }

@@ -1,5 +1,5 @@
 ##fileformat=VCFv4.0
-##fileDate=20220713
+##fileDate=20220715
 ##source=lofreq call -f refs/Escherichia_coli_iai39.fasta -o output/test_data/Escherichia_coli_iai39.filt.lofreq.vcf --verbose output/test_data/Escherichia_coli_iai39.filt.bam 
 ##reference=refs/Escherichia_coli_iai39.fasta
 ##INFO=<ID=DP,Number=1,Type=Integer,Description="Raw Depth">
@@ -11,6 +11,6 @@
 ##INFO=<ID=HRUN,Number=1,Type=Integer,Description="Homopolymer length to the right of report indel position">
 ##FILTER=<ID=min_dp_10,Description="Minimum Coverage 10">
 ##FILTER=<ID=sb_fdr,Description="Strand-Bias Multiple Testing Correction: fdr corr. pvalue > 0.001000">
-##FILTER=<ID=min_snvqual_62,Description="Minimum SNV Quality (Phred) 62">
+##FILTER=<ID=min_snvqual_59,Description="Minimum SNV Quality (Phred) 59">
 ##FILTER=<ID=min_indelqual_20,Description="Minimum Indel Quality (Phred) 20">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO

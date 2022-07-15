@@ -12,3 +12,4 @@ snpEff_*
 *.png
 *.vcf
 plot.py
+check_snv.py

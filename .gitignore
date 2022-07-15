@@ -5,7 +5,10 @@
 **_filt.bam
 *.bam
 *.bam.bai
-data/output/*
+output/*
 */coverage.txt
 snpEff_*
 .snakemake/*
+*.png
+*.vcf
+plot.py

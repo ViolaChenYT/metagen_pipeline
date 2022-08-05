@@ -2,7 +2,8 @@
 
 # echo "usage: <species> | <ID> | ..."
 if [[ $1 == "EC" ]]; then
-	sed -i 's/gi|218698419|ref|NC_011750.1|/Chromosome/g' $2
+	sed -i "s/gi|218698419|ref|NC_011750.1|/Chromosome/g" $2
+	sed -i "s/NC_011750.1/Chromosome/g" $2
 	snpeff Escherichia_coli_iai39 $2 > $3
 
 elif [[ $1 == "KP" ]]; then

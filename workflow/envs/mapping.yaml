@@ -7,4 +7,7 @@ dependencies:
   - bedtools
   - lofreq
   - snpeff
+  - pandas
+  - numpy
   - pysam
+  - sourmash

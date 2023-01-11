@@ -1,0 +1,193 @@
+{
+  "test_data": {
+    "r1": "data/merge_data_R1.fastq.gz",
+    "r2": "data/merge_data_R2.fastq.gz",
+    "ref": "data/E_coli_ref.fna",
+    "snpeff_species": "Escherichia_coli_iai39"
+  },
+  "MBH082": {
+    "r1": "../cpe/MBH082/merge_MBH082_R1.fastq.gz",
+    "r2": "../cpe/MBH082/merge_MBH082_R2.fastq.gz",
+    "ref": "data/E_coli_ref.fna",
+    "snpeff_species": "Escherichia_coli_iai39"
+  },
+  "MBH086": {
+    "r1": "../cpe/MBH086/merge_MBH086_R1.fastq.gz",
+    "r2": "../cpe/MBH086/merge_MBH086_R2.fastq.gz",
+    "ref": "data/E_coli_ref.fna",
+    "snpeff_species": "Escherichia_coli_iai39"
+  },
+  "WEB1012": {
+    "r1": "../isolate/WEB1012/merge_WEB1012_R1.fastq.gz",
+    "r2": "../isolate/WEB1012/merge_WEB1012_R2.fastq.gz",
+    "ref": "data/E_coli_ref.fna",
+    "snpeff_species": "Escherichia_coli_iai39"
+  },
+  "WEB1015": {
+    "r1": "../isolate/WEB1015/merge_WEB1015_R1.fastq.gz",
+    "r2": "../isolate/WEB1015/merge_WEB1015_R2.fastq.gz",
+    "ref": "data/E_coli_ref.fna",
+    "snpeff_species": "Escherichia_coli_iai39"
+  },
+  "spiking": {
+    "r1": "../cpe/MBS1145/merge_MBS1145_R1.fastq.gz",
+    "r2": "../cpe/MBS1145/merge_MBS1145_R2.fastq.gz",
+    "ref": "data/E_coli_ref.fna",
+    "snpeff_species": "Escherichia_coli_iai39"
+  },
+  "simulated_mixture": {
+    "r1": "data/simulated_mixture_100_180_1.fq",
+    "r2": "data/simulated_mixture_100_180_2.fq",
+    "ref": "refs/Escherichia_coli_iai39.fasta",
+    "snpeff_species": "Escherichia_coli_iai39",
+    "isolate": "data/pirs_diploid.snp.lst"
+  },
+  "E_coli_n_kleb": {
+    "r1": "data/simulated_ecoli_kleb_100_180_1.fq",
+    "r2": "data/simulated_ecoli_kleb_100_180_2.fq",
+    "ref": "refs/Escherichia_coli_iai39.fasta",
+    "snpeff_species": "Escherichia_coli_iai39",
+    "isolate": "refs/E_coli_variant_default.snp.lst"
+  },
+  "low_freq_variant_kleb": {
+    "r1": "data/E_coli_8020_kleb_100_180_1.fq",
+    "r2": "data/E_coli_8020_kleb_100_180_2.fq",
+    "ref": "refs/Escherichia_coli_iai39.fasta",
+    "snpeff_species": "Escherichia_coli_iai39",
+    "isolate": "refs/E_coli_variant_default.snp.lst"
+  },
+  "low_freq_variant_e_ferg": {
+    "r1": "data/E_coli_8020_eferg_100_180_1.fq",
+    "r2": "data/E_coli_8020_eferg_100_180_2.fq",
+    "ref": "refs/Escherichia_coli_iai39.fasta",
+    "snpeff_species": "Escherichia_coli_iai39",
+    "isolate": "refs/E_coli_variant_default.snp.lst"
+  },
+  "low_freq_variant_kleb_10x": {
+    "r1": "data/low_abund_variant_kpneu/e_coli_n_kleb_100_180_1.fq",
+    "r2": "data/low_abund_variant_kpneu/e_coli_n_kleb_100_180_2.fq",
+    "ref": "refs/Escherichia_coli.fasta",
+    "snpeff_species": "Escherichia_coli_iai39",
+    "isolate": "refs/E_coli_variant_default.snp.lst"
+  },
+  "low_freq_variant_e_ferg_10x": {
+    "r1": "data/low_abund_variant_eferg/e_coli_n_e_ferg_100_180_1.fq",
+    "r2": "data/low_abund_variant_eferg/e_coli_n_e_ferg_100_180_2.fq",
+    "ref": "refs/Escherichia_coli.fasta",
+    "snpeff_species": "Escherichia_coli_iai39",
+    "isolate": "refs/E_coli_variant_default.snp.lst"
+  },
+  "uhgg_40_10_50_eferg": {
+    "r1": "data/uhgg_ecoli_R1.fq",
+    "r2": "data/uhgg_ecoli_R2.fq",
+    "ref": "gtdb/ecoli.fna",
+    "snpeff_species": "Escherichia_coli_iai39",
+    "isolate": "refs/uhgg_e_coli_variant.snp.lst"
+  },
+  "uhgg_high_cov_ferg_kleb": {
+    "r1": "data/ecoli_1090_ferg_kleb_R1.fq",
+    "r2": "data/ecoli_1090_ferg_kleb_R2.fq",
+    "ref": "gtdb/ecoli.fna",
+    "snpeff_species": "Escherichia_coli_iai39",
+    "isolate": "refs/uhgg_e_coli_variant.snp.lst"
+  },
+  "uhgg_40_10_kleb": {
+    "r1": "data/uhgg_40_10_kleb_R1.fq",
+    "r2": "data/uhgg_40_10_kleb_R2.fq",
+    "ref": "gtdb/ecoli.fna",
+    "snpeff_species": "Escherichia_coli_iai39",
+    "isolate": "refs/uhgg_e_coli_variant.snp.lst"
+  },
+  "ecoli_8020_ferg": {
+    "r1": "data/E_coli_8020_ferg_R1.fq",
+    "r2": "data/E_coli_8020_ferg_R2.fq",
+    "ref": "gtdb/ecoli.fna",
+    "snpeff_species": "Escherichia_coli_iai39",
+    "isolate": "refs/uhgg_e_coli_variant.snp.lst"
+  },
+  "ecoli_8020_kleb": {
+    "r1": "data/E_coli_8020_kleb_R1.fq",
+    "r2": "data/E_coli_8020_kleb_R2.fq",
+    "ref": "gtdb/ecoli.fna",
+    "snpeff_species": "Escherichia_coli_iai39",
+    "isolate": "refs/uhgg_e_coli_variant.snp.lst"
+  },
+  "spiked_kpneu": {
+    "r1": "data/kleb_spike_R1.fq.gz",
+    "r2": "data/kleb_spike_R2.fq.gz",
+    "ref": "gtdb/uhgg_kleb.fasta",
+    "species": "Klebsiella pneumoniae",
+    "isolate": "refs/uhgg_kleb.snp.lst"
+  },
+  "spiked_ferg": {
+    "r1": "data/sister_species/uhgg_ferg_R1.fq.gz",
+    "r2": "data/sister_species/uhgg_ferg_R2.fq.gz",
+    "ref": "gtdb/uhgg_ferg.fasta",
+    "species": "Escherichia fergusonii",
+    "isolate": "gtdb/uhgg_ferg_var.snp.lst"
+  },
+  "spiked_strep_vest": {
+    "r1": "data/sister_species/uhgg_strep_vest_R1.fq.gz",
+    "r2": "data/sister_species/uhgg_strep_vest_R2.fq.gz",
+    "ref": "gtdb/uhgg_stuff/uhgg_strep_vest.fasta",
+    "species": "Streptococcus vestibularis",
+    "isolate": "gtdb/uhgg_stuff/uhgg_strep_vest_var.snp.lst"
+  },
+  "spiked_Esp": {
+    "r1": "data/sister_species/spiked_Esp_R1.fq.gz",
+    "r2": "data/sister_species/spiked_Esp_R2.fq.gz",
+    "ref": "gtdb/uhgg_Escherichia_sp.fasta",
+    "species": "Escherichia sp",
+    "isolate": "gtdb/uhgg_Escherichia_sp.snp.lst"
+  },
+  "spiked_marmotae": {
+    "r1": "data/sister_species/spiked_marmotae_R1.fq.gz",
+    "r2": "data/sister_species/spiked_marmotae_R2.fq.gz",
+    "ref": "gtdb/uhgg_Escherichiamarmotae.fasta",
+    "species": "Escherichia marmotae",
+    "isolate": "gtdb/uhgg_Escherichiamarmotae.snp.lst"
+  },
+  "spiked_albertii": {
+    "r1": "data/sister_species/spiked_albertii_R1.fq.gz",
+    "r2": "data/sister_species/spiked_albertii_R2.fq.gz",
+    "ref": "gtdb/uhgg_Escherichia_albertii.fasta",
+    "species": "Escherichia albertii",
+    "isolate": "gtdb/uhgg_Escherichia_albertii.snp.lst"
+  },
+  "spiked_mar_alb": {
+    "r1": "data/sister_species/mar_alb_R1.fq.gz",
+    "r2": "data/sister_species/mar_alb_R2.fq.gz",
+    "ref": "gtdb/uhgg_stuff/uhgg_Escherichiamarmotae.fasta",
+    "species": "Escherichia marmotae",
+    "isolate": "gtdb/uhgg_stuff/uhgg_Escherichiamarmotae.snp.lst"
+  },
+  "spiked_mar_alb_sp": {
+    "r1": "data/sister_species/mar_alb_sp_R1.fq.gz",
+    "r2": "data/sister_species/mar_alb_sp_R2.fq.gz",
+    "ref": "gtdb/uhgg_stuff/uhgg_Escherichiamarmotae.fasta",
+    "species": "Escherichia marmotae",
+    "isolate": "gtdb/uhgg_stuff/uhgg_Escherichiamarmotae.snp.lst"
+  },
+  "spiked_mar_alb_sp_ferg": {
+    "r1": "data/sister_species/mar_alb_sp_ferg_R1.fq.gz",
+    "r2": "data/sister_species/mar_alb_sp_ferg_R2.fq.gz",
+    "ref": "gtdb/uhgg_stuff/uhgg_Escherichiamarmotae.fasta",
+    "species": "Escherichia marmotae",
+    "isolate": "gtdb/uhgg_stuff/uhgg_Escherichiamarmotae.snp.lst"
+  },
+ 
+  "spiked_egg_lenta": {
+    "r1": "data/spiked_egg_lenta_R1.fq.gz",
+    "r2": "data/spiked_egg_lenta_R2.fq.gz",
+    "ref": "refs/fna_seq/Eggerthella_lenta.fasta",
+    "species": "Eggerthella lenta",
+    "isolate": "refs/fna_seq/Eggerthella_lenta.snp.lst"
+  },
+  "spiked_marm": {
+    "r1": "data/spiked_marm_R1.fq.gz",
+    "r2": "data/spiked_marm_R2.fq.gz",
+    "ref": "refs/fna_seq/Escherichia_marmotae.fasta",
+    "species": "Escherichia marmotae",
+    "isolate": "refs/fna_seq/Escherichia_marmotae.snp.lst"
+  }
+}

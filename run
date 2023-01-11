@@ -1,4 +1,36 @@
 #!/bin/bash
 
-snakemake --configfile config.json --use-conda --cores 2
-rm .snakemake/log/*
+POSITIONAL_ARGS=()
+
+# while [[ $# -gt 0 ]]; do
+#   case $1 in
+#     -e|--extension)
+#       EXTENSION="$2"
+#       shift # past argument
+#       shift # past value
+#       ;;
+#     -s|--searchpath)
+#       SEARCHPATH="$2"
+#       shift # past argument
+#       shift # past value
+#       ;;
+#     --default)
+#       DEFAULT=YES
+#       shift # past argument
+#       ;;
+#     -*|--*)
+#       echo "Unknown option $1"
+#       exit 1
+#       ;;
+#     *)
+#       POSITIONAL_ARGS+=("$1") # save positional arg
+#       shift # past argument
+#       ;;
+#   esac
+# done
+if [[ "$1" == "new" ]]; then
+    snakemake --configfile config.json --use-conda --cores 8 --delete-all-output
+else 
+    snakemake --configfile config.json --use-conda --cores 8 #--allowed-rules build_metagenome_abund get_close_species get_abund_species alignment
+	# --allowed-rules assembly lofreq bamfilter no_filter compare_metrics compare_simulated samtools_index
+fi

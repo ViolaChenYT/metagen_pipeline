@@ -1,0 +1,32 @@
+#!/bin/bash
+
+n_arg=$#
+# echo $n_arg
+
+echo "usage: <output prefix>  <fasta1> <coverage for 1> <fasta2> <coverage for 2> ..."
+
+outfile="$1"
+read1="/mnt/volume1/pipeline/data/${outfile}_R1.fq"
+read2="/mnt/volume1/pipeline/data/${outfile}_R2.fq"
+i=2
+echo $1 $2 $3 $4 $5 
+while (( $i < $n_arg ))
+do 
+	ref=${!i}
+	read_type=${ref:-9:4}
+	cov_pos=$((i+1))
+	cov=${!cov_pos}
+	echo $ref $cov
+	# echo $cov
+	pirs simulate "$ref" -x "$cov" -o "tmp"
+	# sed -i "s/read/$ref/g" "tmp_100_180_1.fq"
+	# sed -i "s/read/$ref/g" "tmp_100_180_2.fq" 
+	cat "tmp_100_180_1.fq" >> "$read1" #| sed "s/read/${read_type}/g" 
+	cat "tmp_100_180_2.fq" >> "$read2"
+	i=$((i+2))
+done
+
+rm "tmp_100_180_1.fq" "tmp_100_180_2.fq" "tmp_100_180.error_rate.distr" "tmp_100_180.insert_len.distr" "tmp_100_180.read.info"
+
+
+

@@ -24,7 +24,6 @@ def analyze_tsv(filename):
 def analyze_instrain(filename):
     df = pd.read_csv(filename, sep="\t", header=0)
 
-
 if __name__ == "__main__":
     if len(snakemake.params) < 1:
         sample = sys.argv[1]

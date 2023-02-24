@@ -43,6 +43,9 @@ do
         && ($(echo "($ani > $ani_threshold_lo)" | tr -d $'\r' | bc -l) -eq 1) ]] \
         || [[ ($(echo "($ani > $ani_threshold_hi)" | tr -d $'\r' | bc -l) -eq 1) \
             && ($(echo "($cov > $threshold_lo)" | tr -d $'\r' | bc -l) -eq 1) ]]; then
+    if [[ $name == *$keyword* ]]; then
+      continue
+    fi
     echo $name $cov $file
     # printf "$ani\n"
     echo $name >> $abund_species_record
@@ -53,6 +56,6 @@ do
   total_cnt=$((total_cnt+1))
 done < <(tail -n +2 "$input")
 # awk '/^>/{f=!d[$1];d[$1]=1}f' $output > $2
-# cat $std_ref >> $output
+cat $std_ref >> $output
 # rm $output
 echo "Done"

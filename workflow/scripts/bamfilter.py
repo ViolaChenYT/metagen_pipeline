@@ -79,9 +79,9 @@ def no_filt(contigs):
 
 if __name__ == "__main__":
     contigs = get_contigs()
-    if snakemake.params[0] == "-s":
+    if snakemake.params[0] == "filt":
         old_filt(contigs)
-    elif snakemake.params[0] == "-l":
-        loose_filt(contigs)
-    else:
+    elif snakemake.params[0] == "unfilt":
         no_filt(contigs)
+    else:
+        loose_filt(contigs)

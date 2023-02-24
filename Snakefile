@@ -1,43 +1,46 @@
 import os
 from snakemake.io import glob_wildcards
-species_list = ("abundant_species", "target_species", "assembly")
-filter_list = ("filt")
+method_list = ("target_species","abundant_species","database", "assembly")
+filter_list = ("filt","unfilt")
 
 # thresholds = (1, 2, 3, 4, 5, 6, 7, 8, 9) # threshold for coverage
 # thresholds = (0.75, 0.77, 0.8, 0.82, 0.85) # threshold for ANI
 # thresholds = (0.0, 0.2, 0.4,0.6,0.8, 0.9)
 
 # og_ref = "refs/" + species.replace(" ", "_") + ".fasta"
-
+wildcard_constraints:
+   species = '\w+',
+   filt = '\w+'
 
 rule all:
   input:
     # expand("output/{sample}/abundant_species.{threshold}.filt.vcf",sample=config,threshold=thresholds),
     # expand("output/{sample}/assembly.{thresh}.filt.vcf",sample=config,thresh=thresholds),
-    expand("output/{sample}/{species}.{filt}.vcf",species=species_list,sample=config, filt=filter_list),
+    # expand("output/{sample}/{species}.{filt}.bam",species=method_list,sample=config,filt=filter_list),
+    # expand("output/{sample}/{species}.{filt}.vcf",species=method_list,sample=config, filt=filter_list),
+    expand("output/{sample}/performance.csv",species=method_list,sample=config)
+    # expand("output/{sample}/{species}.{filt}.indel.vcf",species=method_list,sample=config, filt=filter_list),
     # expand("refs/{sample}.assembly",sample=config),
-    # expand("output/{sample}/{species}.{filt}.bam",species=species_list,sample=config,filt=filter_list),
-    # expand("output/{sample}/{species}.{threshold}.{filt}.bam.bai",species=species_list,sample=config,filt=filter_list,threshold=thresholds),
+    # expand("output/{sample}/{species}.{filt}.bam",species=method_list,sample=config,filt=filter_list),
+    # expand("output/{sample}/{species}.{threshold}.{filt}.bam.bai",species=method_list,sample=config,filt=filter_list,threshold=thresholds),
     # # expand("output/{sample}/dRep_assembly/",sample=config)
     # expand("output/{sample}/{species}.{threshold}.{filt}.vcf", \
-    #     sample=config, species=species_list, mapper=('lofreq',), \
+    #     sample=config, species=method_list, mapper=('lofreq',), \
     #     filt=filter_list,threshold=thresholds), 
-    # # expand("output/{sample}/{species}_profile_IS", sample=config, species=species_list),
+    # # expand("output/{sample}/{species}_profile_IS", sample=config, species=method_list),
     # expand("output/{sample}/compare_{species}.{filt}.{mapper}.tsv", \
-    #     sample=config, species=species_list, mapper=('lofreq',), \
+    #     sample=config, species=method_list, mapper=('lofreq',), \
     #     filt=filter_list, isofilt=filter_list),
-    # # expand("output/{sample}/{species}_instrain.lofreq.tsv",sample=config,species=species_list, filt=filter_list)
+    # # expand("output/{sample}/{species}_instrain.lofreq.tsv",sample=config,species=method_list, filt=filter_list)
     # expand("output/{sample}/compare_result.tsv", sample=config),
 
-    # expand("output/{sample}/compare_{species}.{filt}.iso_{isofilt}.{mapper}.filt.tsv", sample=config, species=species_list, mapper=("lofreq",),filt=filter_list,isofilt=filter_list,),
+    # expand("output/{sample}/compare_{species}.{filt}.iso_{isofilt}.{mapper}.filt.tsv", sample=config, species=method_list, mapper=("lofreq",),filt=filter_list,isofilt=filter_list,),
     # expand("output/{sample}/compare_result_filtered.tsv", sample=config)
 
 #################################################################################################3
 ## Idea:
 #   learn from dRep and have a script that checks the dependencies are properly installed
 #   and list down their locations
-
-ruleorder: bamfilter > no_filter > alignment
 # rule link_ref:
 #   input:
 #     lambda wc: Path(config[wc.sample]['ref']).resolve()
@@ -152,14 +155,14 @@ rule drep:
     shell:
         "dRep dereplicate {output} -g {input}/*.fa"
     
-rule database_n_assembly:
-    input: 
-        ref = "refs/{sample}.assembly/final.contigs.fa",
-        database = "metaSNV/progenomes2_speciesReps_genomes.fna"
-    output:
-        ref = "output/{sample}/database_n_assembly.fna"
-    shell:
-        "cp {input.database} {output.ref} && cat {input.ref} >> {output.ref}"
+# rule database_n_assembly: # not actively in use
+#     input: 
+#         ref = "refs/{sample}.assembly/final.contigs.fa",
+#         database = "metaSNV/progenomes2_speciesReps_genomes.fna"
+#     output:
+#         ref = "output/{sample}/database_n_assembly.fna"
+#     shell:
+#         "cp {input.database} {output.ref} && cat {input.ref} >> {output.ref}"
 
 
 rule index_db:
@@ -170,13 +173,13 @@ rule index_db:
     shell:
         "minimap2 -x sr -t 10 -d {output} {input.db}"
 
-rule index_db_assembly:
-    input:
-        "output/{sample}/database_n_assembly.fna"
-    output:
-        "output/{sample}/database_n_assembly.mmi"
-    shell:
-        "minimap2 -x sr -t 10 -d {output} {input}"
+# rule index_db_assembly: # not actively in use
+#     input:
+#         "output/{sample}/database_n_assembly.fna"
+#     output:
+#         "output/{sample}/database_n_assembly.mmi"
+#     shell:
+#         "minimap2 -x sr -t 10 -d {output} {input}"
 
 rule align_large:
     input:
@@ -184,9 +187,11 @@ rule align_large:
         r2 = lambda wc: config[wc.sample]['r2'],
         ref = "gtdb/database.mmi"
     output:
-        bam = 'output/{sample}/database.bam'
+        bam = temp('output/{sample}/database.bam')
     conda:
         'workflow/envs/mapping.yaml' # include minimap2
+    benchmark:
+        "benchmarks/{sample}/align_large_resource_usage.txt"
     params:
         lambda wc: wc.sample
     threads:
@@ -204,9 +209,9 @@ rule alignment:
     conda:
         'workflow/envs/mapping.yaml' # include minimap2
     threads:
-        8
+        12
     shell:
-        "minimap2 -t {threads} -ax sr --secondary=yes {input.ref} {input.r1} {input.r2} | samtools sort -@ 12 -o {output.bam}"
+        "minimap2 -t {threads} -ax sr --secondary=yes {input.ref} {input.r1} {input.r2} | samtools sort -@ {threads} -o {output.bam}"
 # rule alignment_isolate:
 #     input:
 #         r1 = "/mnt/volume1/isolate/{iso_label}/merge_{iso_label}_R1.fastq.gz" ,
@@ -225,9 +230,9 @@ rule alignment:
 
 rule samtools_index: 
     input:
-        "output/{sample}/{species}.bam"
+        "output/{sample}/{placeholder}.bam"
     output:
-        'output/{sample}/{species}.bam.bai'
+        'output/{sample}/{placeholder}.bam.bai'
     conda:
         'workflow/envs/mapping.yaml'
     shell:
@@ -242,53 +247,43 @@ rule samtools_index:
 #     shell:
 #         'samtools index {input}'
 
+# rule samtools_index_filtered_sorted:
+#     input:
+#         "output/{sample}/{species}.{filt}.sorted.bam"
+#     output:
+#         'output/{sample}/{species}.{filt}.sorted.bam.bai'
+#     conda:
+#         'workflow/envs/mapping.yaml'
+#     shell:
+#         'samtools index {input}'
+
 rule bamfilter:
     input:
         "output/{sample}/{species}.bam",
         "output/{sample}/{species}.bam.bai"
     output:
-        "output/{sample}/{species}.filt.bam"
+        "output/{sample}/{species}.{filt}.bam"
     conda:
         'workflow/envs/mapping.yaml'
     params:
-        "-s",
+        "{filt}",
         lambda wc: config[wc.sample]['ref']
     script:
         'workflow/scripts/bamfilter.py'
 
-rule loose_filter:
-    input:
-        "output/{sample}/{species}.bam",
-        "output/{sample}/{species}.bam.bai"
+rule sort_bam:
+    input: 
+        bam = "output/{sample}/{species}.{filt}.bam"
     output:
-        "output/{sample}/{species}.loose_filt.bam"
-    conda:
-        'workflow/envs/mapping.yaml' 
-    params:
-        "-l",
-        lambda wc: config[wc.sample]['ref']
-    script:
-        'workflow/scripts/bamfilter.py'
-
-rule no_filter:
-    input:
-        "output/{sample}/{species}.bam",
-        "output/{sample}/{species}.bam.bai"
-    output:
-        "output/{sample}/{species}.unfilt.bam"
-    conda:
-        'workflow/envs/mapping.yaml'
-    params:
-        "-n",
-        lambda wc: config[wc.sample]['ref']
-    script:
-        'workflow/scripts/bamfilter.py'
+        "output/{sample}/{species}.{filt}.sorted.bam"
+    shell:
+        "samtools sort {input.bam} -o {output}"
 
 rule lofreq:
     input:
         ref = lambda wc: config[wc.sample]['ref'],
-        filt_bam = "output/{sample}/{species}.{filt}.bam",
-        idx = "output/{sample}/{species}.{filt}.bam.bai"
+        filt_bam = "output/{sample}/{species}.{filt}.sorted.bam",
+        idx = "output/{sample}/{species}.{filt}.sorted.bam.bai"
     output:
         "output/{sample}/{species}.{filt}.vcf"
     conda:
@@ -296,7 +291,34 @@ rule lofreq:
     threads:
         8
     shell: 
-        "lofreq faidx {input.ref} && lofreq call -f {input.ref} -o {output} --verbose {input.filt_bam}"
+        "lofreq faidx {input.ref} && lofreq call-parallel --pp-threads {threads} -f {input.ref} -o {output} --verbose {input.filt_bam}"
+
+
+rule get_lofreq_indel_qual:
+    input:
+        ref = lambda wc: config[wc.sample]['ref'],
+        filt_bam = "output/{sample}/{species}.{filt}.bam",
+        idx = "output/{sample}/{species}.{filt}.bam.bai"
+    output:
+        "output/{sample}/{species}.{filt}.indel.bam"
+    conda:
+        'workflow/envs/mapping.yaml'
+    shell:
+        "lofreq faidx {input.ref} && lofreq indelqual --dindel -f {input.ref} -o {output} {input.filt_bam}"
+
+
+rule lofreq_indel:
+    input:
+        ref = lambda wc: config[wc.sample]['ref'],
+        bam = rules.get_lofreq_indel_qual.output
+    output:
+        "output/{sample}/{species}.{filt}.indel.vcf"
+    conda:
+        'workflow/envs/mapping.yaml'
+    threads:
+        8
+    shell: 
+        "lofreq call --call-indels -f {input.ref} -o {output} --verbose {input.bam}"
         # "lofreq faidx {input.ref} && lofreq call-parallel --pp-threads {threads} -f {input.ref} -o {output} --verbose {input.filt_bam}"
 
 rule pileup:
@@ -345,92 +367,40 @@ rule annotate_gene:
         "(snpeff {params.snpeff_species} {input} > {output}) && "
         "mv ./snpEff* output/{wildcards.sample}/"
 
-# rule filter_vcf:
-#     input:
-#         "output/{sample}/{species}.{filt}.{mapper}.vcf",
-#     output:
-#         "output/{sample}/{species}.{filt}.{mapper}.filt.vcf",
-#     conda:
-#         "workflow/envs/mapping.yaml"
-#     shell:
-#         "python workflow/scripts/filter_vcf.py {input} > {output}"
 
-# rule compare_snps_filt:
+rule process_result:
+    input:
+        expand("output/{sample}/{method}.filt.vcf", method=method_list, sample=config),
+        expand("output/{sample}/{method}.filt.sorted.bam", method=method_list,sample=config)
+    output:
+        "output/{sample}/performance.csv",
+        "output/{sample}/read_mapping_perf.jpg",
+        "output/{sample}/SNP_perf.jpg",
+        "output/{sample}/FP_reads.json"
+    conda:
+        'workflow/envs/plotting.yaml'
+    params:
+        samp = "{sample}",
+        methods = list(method_list),
+        ref = lambda wc: config[wc.sample]['ref'],
+        snp_lst = lambda wc: config[wc.sample]['isolate']
+    script:
+        "workflow/scripts/process_vcf.py"
+
+# rule compare_instrain:
 #     input:
-#         meta = "output/{sample}/{species}.{filt}.{mapper}.filt.vcf",
-#         iso = lambda wc: os.path.join("output/", config[wc.sample]['isolate'] + "/Escherichia_coli_iai39." + wc.isofilt + "." + wc.mapper + ".vcf")
+#         source = "output/{sample}/{species}_profile_IS",
+#         meta = "output/{sample}/{species}_profile_IS/output/{species}_profile_IS_SNVs.tsv",
+#         iso = lambda wc: config[wc.sample]["isolate"]
+#         # iso = lambda wc: os.path.join("output/", config[wc.sample]['isolate'] + "/Escherichia_coli_iai39." + wc.isofilt + "." + wc.mapper + ".vcf")
 #     output:
-#         "output/{sample}/compare_{species}.{filt}.iso_{isofilt}.{mapper}.filt.tsv"
+#         "output/{sample}/{species}_instrain.{mapper}.tsv"
 #     conda:
 #         'workflow/envs/mapping.yaml'
 #     params:
-#         "meta"
+#         "instrain"
 #     script:
 #         "workflow/scripts/JS_script.py"
-
-# rule compare_assembly:
-#     input:
-#         mummer = "output/{sample}/mummer.mums",
-#         iso = lambda wc: config[wc.sample]["isolate"],
-#         meta = "output/{sample}/assembly.{filt}.vcf"
-#     output:
-#         "output/{sample}/compare_assembly.{filt}.{mapper}.tsv"
-#     shell:
-#         "python workflow/scripts/contigs_to_reference.py -m {input.mummer} -r {input.iso} -q {input.meta} -o {output}"
-
-# rule compare_database:
-#     input:
-#         mummer = "gtdb/database_to_ref.mums",
-#         iso = lambda wc: config[wc.sample]["isolate"],
-#         meta = "output/{sample}/database.{filt}.vcf"
-#     output:
-#         "output/{sample}/compare_database.{filt}.{mapper}.tsv"
-#     shell:
-#         "python workflow/scripts/contigs_to_reference.py -m {input.mummer} -r {input.iso} -q {input.meta} -o {output}"
-
-rule compare_simulated:
-    input:
-        iso = lambda wc: config[wc.sample]["isolate"],
-        meta = "output/{sample}/{species}.{filt}.vcf"
-    output:
-        "output/{sample}/compare_{species}.{filt}.lofreq.tsv"
-    conda:
-        'workflow/envs/mapping.yaml'
-    params:
-        "simulated"
-    script:
-        "workflow/scripts/JS_script.py"
-
-# ruleorder: compare_assembly > compare_database > compare_simulated
-# rule compare_snps:
-#     input:
-#         meta = "output/{sample}/{species}.{filt}.{mapper}.vcf",
-#         iso = lambda wc: os.path.join("output/", config[wc.sample]['isolate'] + "/Escherichia_coli_iai39." + wc.isofilt + "." + wc.mapper + ".vcf"),
-#         bam = "output/{sample}/{species}.{filt}.bam",
-#         bai = rules.samtools_index_filtered.output
-#     output:
-#         "output/{sample}/compare_{species}.{filt}.iso_{isofilt}.{mapper}.tsv"
-#     conda:
-#         'workflow/envs/mapping.yaml'
-#     params:
-#         "meta"
-#     script:
-#         "workflow/scripts/JS_script.py"
-
-rule compare_instrain:
-    input:
-        source = "output/{sample}/{species}_profile_IS",
-        meta = "output/{sample}/{species}_profile_IS/output/{species}_profile_IS_SNVs.tsv",
-        iso = lambda wc: config[wc.sample]["isolate"]
-        # iso = lambda wc: os.path.join("output/", config[wc.sample]['isolate'] + "/Escherichia_coli_iai39." + wc.isofilt + "." + wc.mapper + ".vcf")
-    output:
-        "output/{sample}/{species}_instrain.{mapper}.tsv"
-    conda:
-        'workflow/envs/mapping.yaml'
-    params:
-        "instrain"
-    script:
-        "workflow/scripts/JS_script.py"
 
 rule prodigal:
     input:
@@ -440,21 +410,6 @@ rule prodigal:
     shell:
         "prodigal -i {input.ref} -d {output}"
 
-rule gatk:
-    input:
-        genes = rules.prodigal.output,
-        ref = lambda wc: config[wc.species]["ref"] ,
-        bam = 'output/{sample}/{species}.nofilt.bam' 
-    output:
-        directory("output/{sample}/{species}_gatk")
-    conda:
-        "instrain.yaml"
-    benchmark:
-        "benchmarks/{sample}/gatk_resource_usage_{species}.txt"
-    threads:
-        8
-    shell:
-        "echo hi"
 
 rule instrain:
     input:
@@ -472,44 +427,21 @@ rule instrain:
     shell:
         "inStrain profile --min_cov 10 {input.bam} {input.ref} -g {input.genes} -o {output} -p 8"
 
-# rule metaSNV:
+# rule compare_metrics:
 #     input:
+#         # result_files = glob_wildcards("output/{sample}/")
+#         # expand(rules.compare_instrain.output, sample=config,species=method_list,isofilt=filter_list,mapper="lofreq"),
+#         expand("output/{sample}/compare_{species}.{filt}.lofreq.tsv", species=method_list,filt=filter_list,sample = "{sample}")
 #     output:
+#         "output/{sample}/compare_result.tsv"
+#     params:
+#         sample = "{sample}",
+#         species = list(method_list),
+#         filt = False
 #     conda:
-#         "workflow/envs/metasnv.yaml"
-#     threads:
-#         4
-#     shell:
-#         "echo hi"
-rule compare_metrics:
-    input:
-        # result_files = glob_wildcards("output/{sample}/")
-        # expand(rules.compare_instrain.output, sample=config,species=species_list,isofilt=filter_list,mapper="lofreq"),
-        expand("output/{sample}/compare_{species}.{filt}.lofreq.tsv", species=species_list,filt=filter_list,sample = "{sample}")
-    output:
-        "output/{sample}/compare_result.tsv"
-    params:
-        sample = "{sample}",
-        species = list(species_list),
-        filt = False
-    conda:
-        'workflow/envs/mapping.yaml'
-    script:
-        "workflow/scripts/combined_tsv.py"
-
-rule compare_metrics_with_filtered_vcf:
-    input:
-        
-    output:
-        "output/{sample}/compare_result_filtered.tsv"
-    params:
-        sample = "{sample}",
-        species = list(species_list),
-        filt = True
-    conda:
-        'workflow/envs/mapping.yaml'
-    script:
-        "workflow/scripts/combined_tsv.py"
+#         'workflow/envs/mapping.yaml'
+#     script:
+#         "workflow/scripts/combined_tsv.py"
 
 # need to add rules for downloading database, unzip and create signatures
 
@@ -574,7 +506,7 @@ rule build_target_reference:
     shell:
         "cat {input.ref} > {output}"
 
-rule build_consensus_reference:
+rule build_consensus_reference: # don't think it was ever in use
     input:
         ref = lambda wc: config[wc.sample]['ref'],
         vcf = "output/{sample}/target_species.filt.vcf"

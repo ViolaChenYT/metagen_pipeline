@@ -189,5 +189,61 @@
     "ref": "refs/fna_seq/Escherichia_marmotae.fasta",
     "species": "Escherichia marmotae",
     "isolate": "refs/fna_seq/Escherichia_marmotae.snp.lst"
+  },
+  "F0507TV00": {
+    "r1": "data/merge_MBH077_R1.fastq.gz",
+    "r2": "data/merge_MBH077_R2.fastq.gz",
+    "ref": "refs/fna_seq/Escherichia_coli.fna",
+    "species": "Escherichia coli",
+    "isolate": "gtdb/uhgg_marmotae.snp.indel.inversion.fa"
+  },
+  "F0507TV01": {
+    "r1": "data/merge_MBH079_R1.fastq.gz",
+    "r2": "data/merge_MBH079_R2.fastq.gz",
+    "ref": "refs/fna_seq/Escherichia_coli.fna",
+    "species": "Escherichia coli",
+    "isolate": "gtdb/uhgg_marmotae.snp.indel.inversion.fa"
+  },
+  "F0507TV02": {
+    "r1": "data/merge_MBH088_R1.fastq.gz",
+    "r2": "data/merge_MBH088_R2.fastq.gz",
+    "ref": "refs/fna_seq/Escherichia_coli.fna",
+    "species": "Escherichia coli",
+    "isolate": "gtdb/uhgg_marmotae.snp.indel.inversion.fa"
+  },
+  "F0507TV03": {
+    "r1": "data/merge_MBH096_R1.fastq.gz",
+    "r2": "data/merge_MBH096_R2.fastq.gz",
+    "ref": "refs/fna_seq/Escherichia_coli.fna",
+    "species": "Escherichia coli",
+    "isolate": "gtdb/uhgg_marmotae.snp.indel.inversion.fa"
+  },
+  "F0507TV04": {
+    "r1": "data/merge_MBS1122_R1.fastq.gz",
+    "r2": "data/merge_MBS1122_R2.fastq.gz",
+    "ref": "refs/fna_seq/Escherichia_coli.fna",
+    "species": "Escherichia coli",
+    "isolate": "gtdb/uhgg_marmotae.snp.indel.inversion.fa"
+  },
+  "1.1_read_same_as_ref": {
+    "r1": "data/1.1_reads_R1.fq.gz",
+    "r2": "data/1.1_reads_R2.fq.gz",
+    "ref": "refs/fna_seq/Klebsiella_pneumoniae.fna",
+    "species": "Klebsiella pneumoniae",
+    "isolate": "gtdb/uhgg_marmotae.snp.lst"
+  },
+  "1.2_read_same_as_ref": {
+    "r1": "data/1.2_reads_R1.fq.gz",
+    "r2": "data/1.2_reads_R2.fq.gz",
+    "ref": "refs/fna_seq/Klebsiella_pneumoniae.fna",
+    "species": "Klebsiella pneumoniae",
+    "isolate": "gtdb/uhgg_marmotae.snp.indel.inversion.fa"
+  },
+  "1.3_read_same_as_ref": {
+    "r1": "data/1.3_reads_R1.fq.gz",
+    "r2": "data/1.3_reads_R2.fq.gz",
+    "ref": "refs/fna_seq/Klebsiella_pneumoniae.fna",
+    "species": "Klebsiella pneumoniae",
+    "isolate": "gtdb/uhgg_marmotae.snp.indel.inversion.fa"
   }
 }

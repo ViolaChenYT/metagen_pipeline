@@ -1,16 +1,30 @@
 {
-  "isolate_jumbo_read_diff_from_ref_corrected": {
-    "r1": "data/simulated_uhgg_mar_R1.fq.gz",
-    "r2": "data/simulated_uhgg_mar_R2.fq.gz",
-    "ref": "refs/fna_seq/modified_Escherichia_marmotae.fasta",
-    "species": "Escherichia marmotae",
-    "isolate": "gtdb/uhgg_marmotae.snp.indel.inversion.fa"
+  "2.1_read_same_as_ref": {
+    "r1": "data/2.1_reads_R1.fq.gz",
+    "r2": "data/2.1_reads_R2.fq.gz",
+    "ref": "refs/fna_seq/Escherichia_fergusonii.fasta",
+    "species": "Escherichia fergusonii",
+    "isolate": "refs/fna_seq/Escherichia_fergusonii.snp.lst"
   },
-  "isolate_jumbo_read_not_very_diff_from_ref": {
-    "r1": "data/gtdb_variant_marm_R1.fq.gz",
-    "r2": "data/gtdb_variant_marm_R2.fq.gz",
-    "ref": "refs/fna_seq/Escherichia_marmotae.fasta",
-    "species": "Escherichia marmotae",
-    "isolate": "refs/fna_seq/Escherichia_marmotae.snp.indel.inversion.fa"
+  "2.2_read_same_as_ref": {
+    "r1": "data/2.2_reads_R1.fq.gz",
+    "r2": "data/2.2_reads_R2.fq.gz",
+    "ref": "refs/fna_seq/Escherichia_fergusonii.fasta",
+    "species": "Escherichia fergusonii",
+    "isolate": "refs/fna_seq/Escherichia_fergusonii.snp.lst"
+  },
+  "2.3_read_same_as_ref": {
+    "r1": "data/2.3_reads_R1.fq.gz",
+    "r2": "data/2.3_reads_R2.fq.gz",
+    "ref": "refs/fna_seq/Escherichia_fergusonii.fasta",
+    "species": "Escherichia fergusonii",
+    "isolate": "refs/fna_seq/Escherichia_fergusonii.snp.lst"
+  },
+  "2.4_read_same_as_ref": {
+    "r1": "data/2.4_reads_R1.fq.gz",
+    "r2": "data/2.4_reads_R2.fq.gz",
+    "ref": "refs/fna_seq/Escherichia_fergusonii.fasta",
+    "species": "Escherichia fergusonii",
+    "isolate": "refs/fna_seq/Escherichia_fergusonii.snp.lst"
   }
 }

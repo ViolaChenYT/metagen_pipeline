@@ -38,7 +38,7 @@ def parse_mummer():
         
     if len(sys.argv) > 4 and sys.argv[3].isnumeric():
         thresh = float(sys.argv[3])
-    else: thresh = 0.5
+    else: thresh = 0.8
     for contig in mummer_dict:
         if mummer_dict[contig] <= thresh * contig_len[contig]:
             print(contig)

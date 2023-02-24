@@ -21,8 +21,8 @@ do
 	pirs simulate "$ref" -x "$cov" -o "tmp"
 	# sed -i "s/read/$ref/g" "tmp_100_180_1.fq"
 	# sed -i "s/read/$ref/g" "tmp_100_180_2.fq" 
-	cat "tmp_100_180_1.fq" >> "$read1" #| sed "s/read/${read_type}/g" 
-	cat "tmp_100_180_2.fq" >> "$read2"
+	cat "tmp_100_180_1.fq" | sed "s/read/${read_type}/g" >> "$read1"
+	cat "tmp_100_180_2.fq" | sed "s/read/${read_type}/g" >> "$read2"
 	i=$((i+2))
 done
 

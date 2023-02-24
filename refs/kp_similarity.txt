@@ -1,0 +1,1 @@
+fna_seq/Klebsiella_pneumoniae.fna	KP_diverge_genome.fna	97.8996	1610	1846

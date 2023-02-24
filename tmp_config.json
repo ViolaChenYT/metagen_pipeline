@@ -175,7 +175,6 @@
     "species": "Escherichia marmotae",
     "isolate": "gtdb/uhgg_stuff/uhgg_Escherichiamarmotae.snp.lst"
   },
- 
   "spiked_egg_lenta": {
     "r1": "data/spiked_egg_lenta_R1.fq.gz",
     "r2": "data/spiked_egg_lenta_R2.fq.gz",

@@ -9,6 +9,7 @@ import subprocess
 import matplotlib.pyplot as plt
 import json
 import seaborn as sns
+import gzip
 '''
 Originally written by Jean-Sebastien
 Significantly modified by Viola Chen
@@ -278,7 +279,7 @@ def check_read_n_snp(result_dir, methods, fastq, snp=None,identifier='read'):
   bash_command = f"zcat {fastq} | grep '_180_' | wc -l"
   # print(bash_command)
   n_reads = int(subprocess.check_output(bash_command, shell=True, text=True))
-  print("total", n_reads)
+  # print("total", n_reads)
   dct = get_isolate_meta()["species"]
   # print(dct.keys())
   all_dict = dict()
@@ -337,9 +338,10 @@ def get_contigs(species_name):
   '''
   metadata = "gtdb/gtdb_metadata.csv"
   meta_df = pd.read_csv(metadata)
-  ref_filename = meta_df.loc[meta_df['name'] == f">{species_name}", 'genome_filename']
+  ref_filename = meta_df.loc[meta_df['name'] == f">{species_name}", 'genome_filename'].iloc[0]
+  # print(ref_filename)
   contig_names = []
-  with open(ref, "r") as f:
+  with gzip.open(f"gtdb/{ref_filename}", "rt") as f:
       lines = f.readlines()
       for line in lines:
           if line[0] == ">":
@@ -365,18 +367,37 @@ def handle_abund_species(sample,identifier="read"):
     lines = text.split('\n')
   df = df[df["name"].isin(lines)]
   df.index = df['name']
+  # print(df)
+  contig_to_species = dict()
   for name in df['name']:
-    specific_cont = get_contigs(name)
-    bam_file = f"{result_dir}/abundant_species.filt.sorted.bam"
-    # vcf_file = f"{result_dir}/{method}.filt.vcf"
-    bam = pysam.AlignmentFile(bam_file, "rb")
-    # species_count = dict()
-    df.at[name, 'reads_gotten'] = 0
-    for cont in specific_cont:
-      for read in bam.fetch(cont):
-        if read.query_name.startswith(identifier):
-          df.at[name, 'reads_gotten'] += 1
-  df.to_csv(f"output/{sample}/selected_species.csv")
+    specific_contigs = get_contigs(name)
+    # print(name,specific_contigs)
+    for c in specific_contigs:
+      contig_to_species[c] = name
+  # print(contig_to_species)
+  bam_file = f"{result_dir}/abundant_species.bam"
+  # vcf_file = f"{result_dir}/{method}.filt.vcf"
+  bam = pysam.AlignmentFile(bam_file, "rb")
+  # species_count = dict()
+  species_count = dict()
+  for sp in df.index:
+    species_count[sp] = 0
+  for contig in contig_to_species.keys():
+    spec = contig_to_species[contig]
+    for read in bam.fetch(f'{contig}'):
+      if read.query_name.startswith(identifier):
+          species_count[spec]+=1
+  # for read in bam.fetch():
+  #   print(read.query_name, read.reference_name)
+  reads_got = [species_count[sp] for sp in df.index]
+  df['reads_gotten'] = reads_got
+  df = df.round(3)
+  df = df.sort_values(by='average_abund',ascending=False)
+  df.to_csv(f"output/{sample}/selected_species_abund.csv")
+  df1 = df.sort_values(by='ani',ascending=False)
+  df1.to_csv(f"output/{sample}/selected_species_ani.csv")
+  df2 = df.sort_values(by="reads_gotten",ascending=False)
+  df2.to_csv(f"output/{sample}/selected_species_FN_reads.csv")
   f.close()
 
 
@@ -390,7 +411,7 @@ if __name__ == "__main__":
   if sample[0] == "1": identifier = "read"
   else: identifier = "ferg"
 
-  # handle_abund_species(sample,identifier)
+  handle_abund_species(sample,identifier)
 
   df = check_read_n_snp(result_dir, methods, fastq, snp_lst,identifier)
   df = df.round(2)
@@ -400,23 +421,20 @@ if __name__ == "__main__":
   x = np.arange(len(methods))
   read_df = df[["read_sensitivity","read_precision"]]
   read_df = read_df.stack().to_frame().reset_index()
-  read_df = read_df.set_axis(['name', 'type', 'value'], axis=1)
-  ax = sns.barplot(x = "name", y = "value", hue="type", data = read_df, width=0.5)
+  read_df = read_df.set_axis(['kind', 'type', 'value'], axis=1)
+  ax = sns.barplot(x = "kind", y = "value", hue="type", data = read_df, width=0.5)
   for container in ax.containers:
     ax.bar_label(container)
   ax.legend(loc='lower right')
   ax.set_ylim(0, 1)
   plt.savefig(f"{result_dir}/read_mapping_perf.jpg")
   plt.cla()
-  fig, ax = plt.subplots(constrained_layout=True)
-  for what in ['SNP_sensitivity','SNP_precision']:
-      attribute=what
-      measurement=df[what]
-      offset = width * multiplier
-      rects = ax.bar(x + offset, measurement, width, label=attribute)
-      ax.bar_label(rects, padding=3)
-      multiplier += 1
-  ax.set_xticks(x + width, methods)
+  snp_df = df[["SNP_sensitivity","SNP_precision"]]
+  snp_df = snp_df.stack().to_frame().reset_index()
+  snp_df = snp_df.set_axis(['kind', 'type', 'value'], axis=1)
+  ax = sns.barplot(x = "kind", y = "value", hue="type", data = snp_df, width=0.5)
+  for container in ax.containers:
+    ax.bar_label(container)
   ax.legend(loc='lower right')
   ax.set_ylim(0, 1)
   plt.savefig(f"{result_dir}/SNP_perf.jpg")

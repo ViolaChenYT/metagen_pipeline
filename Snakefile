@@ -1,6 +1,6 @@
 import os
 from snakemake.io import glob_wildcards
-method_list = ("target_species","abundant_species","database", "assembly")
+method_list = ("target_species","abundant_species", "database","assembly")
 filter_list = ("filt","unfilt")
 
 # thresholds = (1, 2, 3, 4, 5, 6, 7, 8, 9) # threshold for coverage
@@ -16,7 +16,7 @@ rule all:
   input:
     # expand("output/{sample}/abundant_species.{threshold}.filt.vcf",sample=config,threshold=thresholds),
     # expand("output/{sample}/assembly.{thresh}.filt.vcf",sample=config,thresh=thresholds),
-    # expand("output/{sample}/{species}.{filt}.bam",species=method_list,sample=config,filt=filter_list),
+    # expand("output/{sample}/{species}.bam",species=method_list,sample=config,filt=filter_list),
     # expand("output/{sample}/{species}.{filt}.vcf",species=method_list,sample=config, filt=filter_list),
     expand("output/{sample}/performance.csv",species=method_list,sample=config)
     # expand("output/{sample}/{species}.{filt}.indel.vcf",species=method_list,sample=config, filt=filter_list),
@@ -205,7 +205,7 @@ rule alignment:
         r2 = lambda wc: config[wc.sample]['r2'],
         ref = "output/{sample}/{species}.fasta"
     output:
-        bam = temp('output/{sample}/{species}.bam')
+        bam = 'output/{sample}/{species}.bam'
     conda:
         'workflow/envs/mapping.yaml' # include minimap2
     threads:

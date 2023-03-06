@@ -13,10 +13,11 @@ echo $1 $2 $3 $4 $5
 while (( $i < $n_arg ))
 do 
 	ref=${!i}
-	read_type=${ref:-9:4}
+	read_type=${ref:20:4}
+	echo $read_type
 	cov_pos=$((i+1))
 	cov=${!cov_pos}
-	echo $ref $cov
+	# echo $ref $cov
 	# echo $cov
 	pirs simulate "$ref" -x "$cov" -o "tmp"
 	# sed -i "s/read/$ref/g" "tmp_100_180_1.fq"

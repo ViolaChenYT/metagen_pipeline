@@ -1,0 +1,9 @@
+name: main
+channels:
+  - bioconda
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.11
+  - biopython
+  - entrez-direct 

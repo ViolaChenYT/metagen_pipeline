@@ -1,0 +1,9 @@
+{
+	"entrez": "conda/main.yaml",
+	"biopython": "conda/main.yaml",
+	"art": "conda/art.yaml",
+	"sourmash": "conda/sourmash.yaml",
+	"bwasam": "conda/bwasam.yaml",
+	"fastANI": "conda/fastANI.yaml",
+	"lofreq": "conda/lofreq.yaml"
+}

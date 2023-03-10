@@ -1,0 +1,90 @@
+import os
+from snakemake.io import glob_wildcards
+
+config['softparams'] = {}
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+# SOFT CONFIGURATION
+
+'''
+fname = workflow.source_path('softpaths.json')
+with open(fname) as f:
+    config['softparams']['soft'] = json.load(f)
+'''
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+# CONDA CONFIGURATION
+
+fname = workflow.source_path('condaenvs.json')
+with open(fname) as f:
+    config['softparams']['conda'] = json.load(f)
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+# DEFAULT VAR
+
+method_list = ("target_species", "abundant_species", "database", "assembly")
+filter_list = ("filt", "unfilt")
+
+wildcard_constraints:
+   species = '\w+',
+   filt = '\w+'
+
+
+samples = config['samples']
+for sample in samples:
+    config['samples'][sample]['r1'] = f'simulation/illumina/{sample}/merged_R1.fq.gz'
+    config['samples'][sample]['r2'] = f'simulation/illumina/{sample}/merged_R2.fq.gz'
+
+    ref = config['samples'][sample]['ref']
+    config['samples'][sample]['ref'] = ref if os.path.isfile(ref) else f'simulation/download/{ref}.fa'
+
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+
+rule all:
+  input:
+    expand('simulation/fastANI/{sample}.fastani.tsv', sample=samples),
+    expand('assessement/{sample}/mapping_assessement.{kind}.tsv', sample=samples, 
+        kind=('wodecoys.fixmate.sorted.filtered', 'decoys', 'decoys.fixmate.sorted.filtered')),
+    expand('assessement/{sample}/vcalling_assessement.{kind}.tsv', sample=samples,
+        kind=('wodecoys', 'decoys')),
+
+module si:
+    snakefile: 'workflow/simulate.snk'
+    config: config
+
+use rule * from si as si_*
+
+module sm:
+    snakefile: 'workflow/sourmash.snk'
+    config: config
+
+use rule * from sm as sm_*
+
+'''
+
+module dr:
+    snakefile: 'workflow/drep.snk'
+    config: config
+
+use rule * from dr as dr_*
+
+module kr:
+    snakefile: 'workflow/kraken.snk'
+    config: config
+
+use rule * from kr as kr_*
+
+'''
+
+module ma:
+    snakefile: 'workflow/mapping.snk'
+    config: config
+
+use rule * from ma as ma_*
+
+module ae:
+    snakefile: 'workflow/assessment.snk'
+    config: config
+
+use rule * from ae as ae_*

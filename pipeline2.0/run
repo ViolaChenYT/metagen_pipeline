@@ -1,3 +1,3 @@
 #!/bin/bash
 
-snakemake -s main.smk --configfile config.json --use-conda --cores 12
+snakemake -n -s main.smk --configfile config.json --use-conda --cores 12

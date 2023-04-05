@@ -1,0 +1,9 @@
+{
+	"entrez": "envs/main.yaml",
+	"biopython": "envs/main.yaml",
+	"art": "envs/art.yaml",
+	"sourmash": "envs/sourmash.yaml",
+	"bwasam": "envs/bwasam.yaml",
+	"fastANI": "envs/fastANI.yaml",
+	"lofreq": "envs/lofreq.yaml"
+}

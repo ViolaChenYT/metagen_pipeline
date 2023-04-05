@@ -17,6 +17,10 @@ wildcard_constraints:
 ### Load conda configurations
 ## --------------------------------------------------------------------------
 
+config['softparams'] = {}
+fname = workflow.source_path('conda_env.json')
+with open(fname) as f:
+    config['softparams']['conda'] = json.load(f)
 
 ### Load samples
 ## --------------------------------------------------------------------------

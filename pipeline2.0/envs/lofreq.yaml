@@ -1,0 +1,7 @@
+name: lofreq
+channels:
+    - bioconda
+    - conda-forge
+dependencies:
+    - tabix=1.11
+    - lofreq=2.1.3.1

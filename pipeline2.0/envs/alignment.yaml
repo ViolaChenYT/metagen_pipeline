@@ -1,0 +1,13 @@
+name: alignment
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - bowtie2
+  - bwa=0.7.17
+  - samtools=1.16.1
+  - bedtools
+  - pandas=1.5.2
+  - numpy=1.24.1
+  - pysam=0.19.1
+  - sourmash=4.6.1

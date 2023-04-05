@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 import sys
 
-species = snakemake.params.species
-filters = ["filt"]  #
+species = ["combined", "Escherichia_coli_iai39", "metagenome"]
+filters = ["nofilt", "loose_filt", "filt"]  #
 iso_filters = ["filt", "nofilt"]
 
 header = ["FN", "FP", "TP", "Sensitivity", "Precision"]
@@ -24,29 +24,24 @@ def analyze_tsv(filename):
 def analyze_instrain(filename):
     df = pd.read_csv(filename, sep="\t", header=0)
 
+
 if __name__ == "__main__":
     if len(snakemake.params) < 1:
-        sample = sys.argv[1]
-        outfile = sys.argv[2]
-        # raise Exception("please enter sample name, eg. MBH082")
-    else:
-        sample = snakemake.params.sample
-        outfile = snakemake.output[0]
+        raise Exception("please enter sample name, eg. MBH082")
+    sample = snakemake.params[0]
+    outfile = snakemake.output[0]
     with open(outfile, "w") as out:
         out.write(sample + "\t" + '\t'.join(header)+"\n")
-    
-        for tsv in snakemake.input:
-            name = tsv.split("/")[1] + ("").join(tsv.split("/")[2].split(".")[:2])[8:]
-            out.write(f"{name}"+"\t")
-            # print("yeeet")
-            stats = analyze_tsv(tsv)
-            out.write(stats+"\n")
-            instrain = False
-            if instrain:
-                for sp in species:
-                    for isofilt in iso_filters:
-                        filename = f"output/{sample}/{sp}_instrain_iso_{isofilt}.lofreq.tsv"
-                        out.write(f"instrain_{sp}_iso{isofilt}\t")
-                        stats = analyze_tsv(filename)
-                        out.write(stats+"\n")
+        for sp in species:
+            for filtr in filters:
+                for isofilt in iso_filters:
+                    filename = f"output/{sample}/compare_{sp}.{filtr}.iso_{isofilt}.lofreq.tsv"
+                    out.write(f"{sp}_{filtr}_iso{isofilt}"+"\t")
+                    # print("yeeet")
+                    stats = analyze_tsv(filename)
+                    out.write(stats+"\n")
     out.close()
+    for sp in species:
+        filename = f"output/{sample}/{sp}_profile_IS/output/{species}_profile_IS_SNVs.tsv"
+        print(f"instrain\t{sp}")
+        analyze_tsv(filename)

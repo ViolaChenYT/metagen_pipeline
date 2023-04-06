@@ -1,4 +1,8 @@
-rule ncbi_ass:
+## Why is it called "simulate"
+
+
+rule ncbi_ass: # download NCBI database??? reference?
+    ''' download the specific NCBI reference for particular genome ID '''
     input:
         script = workflow.source_path('scripts/download_ncbi.sh')
     output:
@@ -11,6 +15,7 @@ rule ncbi_ass:
         'bash {input.script} {wildcards.genomeid} {output} && [[ -s {output} ]]'
 
 rule mutate:
+    ''' create mutated version of the sequence''' 
     input:
         rules.ncbi_ass.output
     output:
@@ -23,6 +28,9 @@ rule mutate:
         'scripts/simulation_mutate.py'
 
 rule illumina:
+    ''' art == illumina 454 and solid read simulator
+    - why specifically art?
+    - i can totally do this myself as well right????'''
     input:
         rules.mutate.output
     output:
@@ -45,6 +53,8 @@ rule illumina:
          -s {params.std} -o {params.outname} -d "::{wildcards.genomeid}::" -na -rs {params.seed} > {log}'
 
 rule merge_reads:
+    ''' put reads together and gzip them
+    '''
     input:
         lambda wc: [f'simulation/illumina/{wc.sample}/{genomeid}_{wc.rtype}.fq'
             for genomeid in config['samples'][wc.sample]['genomes']]
@@ -63,6 +73,8 @@ rule fastANI_files_list:
         'ls -d {input} > {output}'
 
 rule fastANI:
+    ''' seem to be batch running fastANI????
+    '''
     input:
         rules.fastANI_files_list.output
     output:

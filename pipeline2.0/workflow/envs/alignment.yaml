@@ -1,0 +1,10 @@
+name: alignment
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - samtools
+  - bedtools
+  - pandas
+  - numpy
+  - pysam

@@ -1,0 +1,6 @@
+name: sourmash
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - sourmash

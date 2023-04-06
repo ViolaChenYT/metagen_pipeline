@@ -1,0 +1,9 @@
+name: instrain
+channels:
+    - bioconda
+    - conda-forge
+dependencies:
+    - pandas
+    - numpy=1.21.5
+    - pysam=0.19.1
+    - instrain=1.6.2

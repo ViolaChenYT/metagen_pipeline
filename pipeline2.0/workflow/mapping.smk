@@ -28,35 +28,21 @@ rule make_reference:
     shell:
         'cat {input.decoys} {input.ref} > {output}'
 
-rule bwa_index:
-    input:
-        rules.make_reference.output
-    output:
-        'mapping/{sample}/refs/decoys/ref.fa.gz.amb'
-    conda:
-        config['softparams']['conda']['bwasam']
-    log:
-        'mapping/{sample}/refs/decoys/ref.fa.gz.log'
-    shell:
-        'bwa index {input} 2> {log}'
-
-rule bwa:
+rule alignment:
     input:
         r1 = lambda wc: config['samples'][wc.sample]['r1'],
         r2 = lambda wc: config['samples'][wc.sample]['r2'],
         ref = rules.make_reference.output,
-        idx = rules.bwa_index.output
     output:
         temp('mapping/{sample}/aln.decoys.bam')
     conda:
-        config['softparams']['conda']['bwasam']
+        config['softparams']['conda']['alignment']
     threads:
         16
     log:
         'mapping/{sample}/aln.log'
     shell:
-        "(bwa mem -t {threads} {input.ref} {input.r1} {input.r2}"
-        " | samtools view -b | samtools sort -n --threads {threads} > {output}) 2> {log}"
+        "minimap2 -t {threads} -ax sr --secondary=yes {input.ref} {input.r1} {input.r2} | samtools view -b | samtools sort -n --threads {threads} > {output}) 2> {log}"
 
 rule samtools_fixmate:
     input:
@@ -64,7 +50,7 @@ rule samtools_fixmate:
     output:
         temp('mapping/{sample}/aln.{bamprefix}.fixmate.bam')
     conda:
-        config['softparams']['conda']['bwasam']
+        config['softparams']['conda']['alignment']
     shell:
         'samtools fixmate {input} {output}'
 
@@ -74,7 +60,7 @@ rule samtools_sort_coordinates:
     output:
         temp('mapping/{sample}/aln.{bamprefix}.fixmate.sorted.bam')
     conda:
-        config['softparams']['conda']['bwasam']
+        config['softparams']['conda']['alignment']
     shell:
         "samtools sort -o {output} {input}"
 
@@ -84,7 +70,7 @@ rule samtools_index:
     output:
         temp('mapping/{sample}/aln.{bamprefix}.fixmate.sorted.bam.bai')
     conda:
-        config['softparams']['conda']['bwasam']
+        config['softparams']['conda']['alignment']
     shell:
         'samtools index {input}'
 
@@ -98,7 +84,7 @@ rule bam_filtering:
         tcov = 0.9,
         tsim = 0.05
     conda:
-        config['softparams']['conda']['bwasam']
+        config['softparams']['conda']['alignment']
     log:
         'mapping/{sample}/bamfiltering.{bamprefix}.log'
     script:
@@ -110,7 +96,7 @@ rule depth:
     output:
         temp('mapping/{sample}/aln.{bamprefix}.depth.txt.gz')
     conda:
-        config['softparams']['conda']['bwasam']
+        config['softparams']['conda']['alignment']
     shell:
         'samtools depth -aa {input} | gzip > {output}'
 
@@ -123,7 +109,7 @@ rule gz2bgz:
     output:
         'mapping/{sample}/refs/{refori}/ref.fa.bgz'
     conda:
-        config['softparams']['conda']['bwasam']
+        config['softparams']['conda']['alignment']
     shell:
         'gunzip -c {input} | bgzip  > {output}'
 

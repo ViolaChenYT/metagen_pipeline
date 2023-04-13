@@ -39,7 +39,7 @@ for sample in samples:
 
 rule all:
     input:
-        expand("simulation/fastANI/{sample}.fastani.tsv", sample=samples),
+        # expand("simulation/fastANI/{sample}.fastani.tsv", sample=samples),
         expand(
             "assessment/{sample}/mapping_assessment.{kind}.tsv",
             sample=samples,
@@ -49,11 +49,11 @@ rule all:
                 "decoys.fixmate.sorted.filtered",
             ),
         ),
-        expand(
-            "assessment/{sample}/vcalling_assessment.{kind}.tsv",
-            sample=samples,
-            kind=("wodecoys", "decoys"),
-        )
+        # expand(
+        #     "assessment/{sample}/vcalling_assessment.{kind}.tsv",
+        #     sample=samples,
+        #     kind=("wodecoys", "decoys"),
+        # )
 
 ###############################################################################
 module simulate:

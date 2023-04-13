@@ -3,7 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - pandas
-  - numpy=1.21.5
+  - numpy
   - pysam
-  - insilicoseq
-  - sourmash
+  - sourmash=4.6
+  

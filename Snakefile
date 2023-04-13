@@ -14,12 +14,12 @@ wildcard_constraints:
 
 rule all:
   input:
-    # expand("output/{sample}/abundant_species.{threshold}.filt.vcf",sample=config,threshold=thresholds),
+    expand("output/{sample}/abundant_species.fasta",sample=config),
     # expand("output/{sample}/assembly.{thresh}.filt.vcf",sample=config,thresh=thresholds),
     # expand("output/{sample}/{species}.bam",species=method_list,sample=config,filt=filter_list),
     # expand("output/{sample}/{species}.{filt}.vcf",species=method_list,sample=config, filt=filter_list),
-    expand("output/{sample}/performance.csv",species=method_list,sample=config),
-    expand("output/{sample}/{species}.cov",species=method_list,sample=config)
+    # expand("output/{sample}/performance.csv",species=method_list,sample=config),
+    # expand("output/{sample}/{species}.cov",species=method_list,sample=config)
     # expand("output/{sample}/{species}.{filt}.indel.vcf",species=method_list,sample=config, filt=filter_list),
     # expand("refs/{sample}.assembly",sample=config),
     # expand("output/{sample}/{species}.{filt}.bam",species=method_list,sample=config,filt=filter_list),
@@ -462,10 +462,8 @@ rule get_abund_species:
         "output/{sample}/abundant_species.csv"
     params:
         sig = "output/{sample}/{sample}.sig"
-    conda:
-        "workflow/envs/sim.yaml"
     shell:
-        "sourmash sketch dna -p abund {input.r1} -o {params.sig} &&"
+        "sourmash sketch dna -p abund {input.r1} -o {params.sig} --force &&"
         "sourmash gather {params.sig} {input.db} -o {output} --threshold=0.0"
 
 rule get_close_species:
@@ -474,12 +472,10 @@ rule get_close_species:
         db = "gtdb/gtdb_sketch"
     output:
         "output/{sample}/close_species.csv"
-    conda:
-        "workflow/envs/sim.yaml"
     params:
         sig = "output/{sample}/close_species.sig"
     shell:
-        "sourmash sketch dna {input.ref} -o {params.sig} && "
+        "sourmash sketch dna {input.ref} -o {params.sig} --force && "
         "sourmash search {params.sig} {input.db} -o {output} --threshold=0.0 --ignore-abundance"
 
 rule build_metagenome_abund:
@@ -494,7 +490,7 @@ rule build_metagenome_abund:
         sample = lambda wc: wc.sample
         # t = lambda wc: wc.threshold
     shell:
-        "./workflow/scripts/combine_fasta.sh {input.csv} {output} {input.ref} '{params.species}' {input.close}"
+        "python workflow/scripts/combine_fasta.py {input.csv} {output} {input.ref} '{params.species}' {input.close}"
 
 rule build_metagenome_close:
     input:

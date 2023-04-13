@@ -11,8 +11,10 @@ rule ncbi_ass: # download NCBI database??? reference?
         config['softparams']['conda']['entrez']
     resources:
         ncbi_load=1
+    params:
+        config['ncbi_api']
     shell:
-        'bash {input.script} {wildcards.genomeid} {output} && [[ -s {output} ]]'
+        'bash {input.script} {wildcards.genomeid} {output} {params} && [[ -s {output} ]]'
 
 rule mutate:
     ''' create mutated version of the sequence''' 
@@ -25,7 +27,7 @@ rule mutate:
     params:
         mfreq = lambda wc: config['samples'][wc.sample]['genomes'][wc.genomeid][0] / 100
     script:
-        'scripts/simulation_mutate.py'
+        'scripts/simulation_mutate.py' # has to be changed, i am not implementing this mutation
 
 rule illumina:
     ''' art == illumina 454 and solid read simulator

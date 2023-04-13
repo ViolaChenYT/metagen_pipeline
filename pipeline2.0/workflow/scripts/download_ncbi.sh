@@ -1,5 +1,7 @@
 #!/bin/bash
 
+## giving a lot of run-time errors right now
+
 if [[ $1 == GCF* ]] ;
 then
 	name1="assembly_nuccore_refseq"
@@ -16,4 +18,4 @@ esearch -db assembly -query $1 | elink -target nuccore -name $name1 | efetch -fo
 if [[ ! -s $2 ]] ;
 then
 	echo "First download fail for $1, switch to db name $name2"
-	esearch -db assembly -query $1 | elink -target nuccore -name $name2 | efetch -format fasta > $2
+	esearch -db assembly -query $1 -api_key $3 | elink -target nuccore -name $name2 | efetch -format fasta > $2

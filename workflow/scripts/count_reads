@@ -1,0 +1,12 @@
+#!/bin/bash
+
+file=$1
+
+if [[ $file == *.fq || $file == *.fastq ]]; then
+	echo $(cat $file |wc -l)/4|bc
+elif [[ $file == *.fastq.gz ]]; then
+	echo $(zcat $file |wc -l)/4|bc
+else
+	echo "not recognized $file"
+fi
+

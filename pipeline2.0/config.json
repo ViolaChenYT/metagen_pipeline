@@ -74,8 +74,6 @@
       }
 
   },
-  "ncbi_email": "TOREPLACE",
-  "ncbi_api": "TOREPLACE",
   "db": {
       "sourmash_sbt": "sourmash/db/gtdb-rs207.genomic-reps.dna.k31.sbt.zip",
       "sourmash_zip": "sourmash/db/gtdb-rs207.genomic-reps.dna.k31.zip"

@@ -1,15 +1,57 @@
 {
-  "2.2.1_read_same_as_ref": {
-    "r1": "data/2.2.1_reads_R1.fq.gz",
-    "r2": "data/2.2.1_reads_R2.fq.gz",
-    "ref": "refs/fna_seq/Escherichia_fergusonii.fasta",
+  "simple_2": {
+    "r1": "data/simple_2_R1.fq",
+    "r2": "data/simple_2_R2.fq",
+    "ref": "refs/fna_seq/Klebsiella_pneumoniae.fna",
     "species": "Escherichia fergusonii",
     "isolate": "refs/fna_seq/Escherichia_fergusonii.snp.lst"
   },
-  "2.3.1_read_same_as_ref": {
+  "simple_5": {
+    "r1": "data/simple_5_R1.fq",
+    "r2": "data/simple_5_R2.fq",
+    "ref": "refs/fna_seq/Klebsiella_pneumoniae.fna",
+    "species": "Escherichia fergusonii",
+    "isolate": "refs/fna_seq/Escherichia_fergusonii.snp.lst"
+  },
+  "simple_5_n_close": {
+    "r1": "data/simple_5_n_close_R1.fq",
+    "r2": "data/simple_5_n_close_R2.fq",
+    "ref": "refs/fna_seq/Klebsiella_pneumoniae.fna",
+    "species": "Escherichia fergusonii",
+    "isolate": "refs/fna_seq/Escherichia_fergusonii.snp.lst"
+  },
+  "simple_5_n_close_uneven": {
+    "r1": "data/simple_5_n_close_uneven_R1.fq",
+    "r2": "data/simple_5_n_close_uneven_R2.fq",
+    "ref": "refs/fna_seq/Klebsiella_pneumoniae.fna",
+    "species": "Escherichia fergusonii",
+    "isolate": "refs/fna_seq/Escherichia_fergusonii.snp.lst"
+  },
+  "simple_5_n_close_uneven2": {
+    "r1": "data/simple_5_n_close_uneven2_R1.fq",
+    "r2": "data/simple_5_n_close_uneven2_R2.fq",
+    "ref": "refs/fna_seq/Klebsiella_pneumoniae.fna",
+    "species": "Escherichia fergusonii",
+    "isolate": "refs/fna_seq/Escherichia_fergusonii.snp.lst"
+  },
+  "simple_5_n_close_uneven3": {
+    "r1": "data/simple_5_n_close_uneven3_R1.fq",
+    "r2": "data/simple_5_n_close_uneven3_R2.fq",
+    "ref": "refs/fna_seq/Klebsiella_pneumoniae.fna",
+    "species": "Escherichia fergusonii",
+    "isolate": "refs/fna_seq/Escherichia_fergusonii.snp.lst"
+  },
+  "2.2_read_test": {
+    "r1": "data/2.2_reads_R1.fq.gz",
+    "r2": "data/2.2_reads_R2.fq.gz",
+    "ref": "refs/fna_seq/Klebsiella_pneumoniae.fna",
+    "species": "Escherichia fergusonii",
+    "isolate": "refs/fna_seq/Escherichia_fergusonii.snp.lst"
+  },
+  "2.3.1_read_test": {
     "r1": "data/2.3.1_reads_R1.fq.gz",
     "r2": "data/2.3.1_reads_R2.fq.gz",
-    "ref": "refs/fna_seq/Escherichia_fergusonii.fasta",
+    "ref": "refs/fna_seq/Klebsiella_pneumoniae.fna",
     "species": "Escherichia fergusonii",
     "isolate": "refs/fna_seq/Escherichia_fergusonii.snp.lst"
   }
